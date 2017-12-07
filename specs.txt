@@ -1,0 +1,24 @@
+API:
+  - authentication
+  - get rooms
+  - check in
+  - check out
+  - log out
+
+Database:
+  Users:
+    -username
+    -token?
+    -state (idle/room/offline(?))
+
+
+  Room:
+    -id
+    -users_in_room
+    -messages
+
+  Check:
+    -in/out
+    -user_id
+    -timestamp
+    -room_id
