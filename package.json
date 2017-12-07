@@ -4,6 +4,7 @@
   "description": "Web application for IST",
   "main": "index.js",
   "scripts": {
+    "start": "node server/index.js",
     "test": "test"
   },
   "repository": {
