@@ -1,7 +1,7 @@
 <template>
   <div class="main">
     <div class="header">
-      <h2>Fénix-WebApp</h2>
+      <h2>Fénix WebApp</h2>
     </div>
     <div class="container">
       <router-view></router-view>
@@ -10,8 +10,9 @@
 </template>
 
 <script>
+  import { router } from './router.js';
   export default {
-    router: require('./router.js'),
+    router,
   }
 </script>
 
