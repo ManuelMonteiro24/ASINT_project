@@ -1,24 +1,27 @@
 API:
-  - authentication
-  - get rooms
-  - check in
-  - check out
-  - log out
+  - /login/user
+  - /login/admin
+  - /rooms
+  - /check_in
+  - /check_out
+  - /logout
 
 Database:
   Users:
     -username
-    -token?
     -state (idle/room/offline(?))
-
 
   Room:
     -id
-    -users_in_room
-    -messages
+    -checkedInUsers[user_ids]
+    -messages [message_ids]
 
   Check:
-    -in/out
-    -user_id
+    -io
+    -userId
     -timestamp
     -room_id
+
+  Message:
+    -userId
+    -text
