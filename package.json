@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/ManuelMonteiro24/ASINT_project/issues"
   },
-  "homepage": "https://github.com/ManuelMonteiro24/ASINT_project#readme"
+  "homepage": "https://github.com/ManuelMonteiro24/ASINT_project#readme",
+  "dependencies": {
+    "express": "^4.16.2"
+  }
 }
