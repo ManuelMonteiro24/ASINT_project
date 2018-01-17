@@ -1,18 +1,20 @@
 const Express = require('express');
+const cookieParser = require('cookie-parser');
 const mongoose = require('mongoose');
 const Path = require('path');
 
-const Config = require('./config.js');
-const Check = require('../models/checkio.js');
-const User = require('../models/user.js');
+const config = require('./modules/config').server;
+const Check = require('../models/checkio');
+const User = require('../models/user');
 
-const routes = require('./routes');
+const router = require('./modules/router');
 
 const App = Express();
 
 //Initialize App
+App.use(cookieParser(config.auth.cookieSign))
 App.use('/scripts', Express.static('scripts'));
-App.use(routes);
+App.use(router);
 
 
 //TEST PURPOSES
@@ -32,10 +34,10 @@ App.get('/state', (req, res) => {
   });
 });
 
-var listener = App.listen(Config.local, err => {
+var listener = App.listen(config.local, err => {
   if(err) { throw err; }
 
-  var url = 'mongodb://'.concat(Config.database.host + ':' + Config.database.port) + '/local';
+  var url = 'mongodb://'.concat(config.database.host + ':' + config.database.port) + '/local';
   mongoose.connect(url, { useMongoClient: true });
 
   console.log('Server listening @ ' + listener.address().address + ':' + listener.address().port);

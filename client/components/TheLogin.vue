@@ -1,31 +1,25 @@
 <template>
   <div class="root-elem">
-    <div v-if="!regUsr">
       <h1>Login Page</h1>
       <button v-on:click="loginAdmin">Login as Admin</button>
-      <button v-on:click="toggleUserLogin">Login as Regular User</button>
-    </div>
-    <div v-else>
-      <object type="text/html" data="https://fenix.tecnico.ulisboa.pt/oauth/userdialog?client_id=1132965128044593&redirect_uri=http://localhost:3000/login/user/" width="800px" height="600px" >
-      </object>
-      <a v-on:click="toggleUserLogin">Back</a>
+      <button v-on:click="loginUser">Login as Regular User</button>
     </div>
   </div>
 </template>
 
 <script>
-  var data = { regUsr: false };
-
   export default {
     data: function() {
-      return data;
+      return {
+        userLoginRedirectLink: "https://fenix.tecnico.ulisboa.pt/oauth/userdialog?client_id=1132965128044593&redirect_uri=http://localhost:3000/login/user/",
+      };
     },
     methods: {
       loginAdmin: function() {
-        this.$router.push({name: 'login'});
+        this.$router.push({name: 'adminlogin'});
       },
-      toggleUserLogin: function() {
-        this.$data.regUsr = !this.$data.regUsr;
+      loginUser: function() {
+        this.$router.push({ name: 'redirect', params: { redirectLink: this.userLoginRedirectLink } });
       },
     }
   }
