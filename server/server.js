@@ -6,31 +6,14 @@ const Config = require('./config.js');
 const Check = require('../models/checkio.js');
 const User = require('../models/user.js');
 
+const routes = require('./routes');
+
 const App = Express();
 
 //Initialize App
 App.use('/scripts', Express.static('scripts'));
+App.use(routes);
 
-
-App.get('/', (req, res) => {
-  //TEST PURPOSES
-  //var doc = new Check({io: 'i', userId: 'jasaID', roomId: 'roomID'})
-  var doc = new User({
-    username: 'jasa',
-    state: false,
-  });
-  doc.save( err => {
-    if(err) {
-      console.log('FUCK');
-      throw err;
-    }
-
-  });
-  doc.set('state', true)
-
-  
-  res.sendFile(Path.resolve(__dirname + '/../client/index.html'));
-});
 
 //TEST PURPOSES
 App.get('/state', (req, res) => {

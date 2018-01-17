@@ -1,20 +1,32 @@
 <template>
   <div class="root-elem">
     <h1>Home Page</h1>
-    <button v-on:click="loginAdmin">Login as Admin</button>
-    <button v-on:click="loginUser">Login as Regular User</button>
+    <div v-if="!userStatus">
+      <router-link :to="{ name: 'login', params: {}}">Login</router-link>
+    </div>
+    <h2 v-else>Welcome</h2>
   </div>
 </template>
 
 <script>
-  export default {
-    methods: {
-      loginAdmin: function() {
-        this.$router.push({name: 'login'});
-      },
-      loginUser: function() {
-        //TODO: fetch GET /login/user
-      },
+  //Initialize TheHome instance
+  var userStatus = false;
+  fetch('/login/status').then(function(resp) {
+    return resp.json();
+  }).then(function(data) {
+    if(data.status){
+      console.log('true')
+      userStatus = true;
+    } else {
+      console.log('false')
     }
+
+  }).catch(err => { throw err; });
+
+  export default {
+    data: function() {
+      var data = { userStatus }
+      return data;
+    },
   }
 </script>

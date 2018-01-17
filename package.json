@@ -24,6 +24,7 @@
     "css-loader": "^0.28.7",
     "express": "^4.16.2",
     "mongoose": "^4.13.6",
+    "request": "^2.83.0",
     "vue": "^2.5.9",
     "vue-loader": "^13.5.0",
     "vue-router": "^3.0.1",

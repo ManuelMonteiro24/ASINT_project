@@ -1,52 +1,32 @@
 <template>
-  <div>
-    <form v-on:submit.prevent="submit">
-      <label>Login</label><br>
-      <input type="text" ref="login"><br><br>
-      <label>Password</label><br>
-      <input type="password" ref="pass"><br><br><br>
-      <input type="button" value="Sign In" v-on:click="submit"><br><br>
-    </form>
-    <router-link :to="{ name: 'home' }">Home</router-link>
+  <div class="root-elem">
+    <div v-if="!regUsr">
+      <h1>Login Page</h1>
+      <button v-on:click="loginAdmin">Login as Admin</button>
+      <button v-on:click="toggleUserLogin">Login as Regular User</button>
+    </div>
+    <div v-else>
+      <object type="text/html" data="https://fenix.tecnico.ulisboa.pt/oauth/userdialog?client_id=1132965128044593&redirect_uri=http://localhost:3000/login/user/" width="800px" height="600px" >
+      </object>
+      <a v-on:click="toggleUserLogin">Back</a>
+    </div>
   </div>
 </template>
 
 <script>
+  var data = { regUsr: false };
+
   export default {
+    data: function() {
+      return data;
+    },
     methods: {
-      submit: function() {
-        //TODO fetch GET /login/admin
+      loginAdmin: function() {
+        this.$router.push({name: 'login'});
+      },
+      toggleUserLogin: function() {
+        this.$data.regUsr = !this.$data.regUsr;
       },
     }
   }
 </script>
-
-<style scoped>
-  form {
-    position: relative;
-    margin: 0 auto;
-    width: 20%;
-    height: 30%;
-    top: 2%;
-  }
-
-  label, input[type="text"], input[type="password"] {
-    margin-top: 9px;
-    font-family: "Times New Roman";
-    font-size: 22px;
-  }
-
-  input[type="button"] {
-    width: 70%;
-    font-weight: bold;
-  }
-
-  .ct-login {
-    color: #bd4929;
-  }
-
-  a {
-    display: inline-block;
-    margin-top: 5%;
-  }
-</style>

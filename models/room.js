@@ -11,6 +11,9 @@ const RoomSchema = new mongoose.Schema({
   messages: {
     type: Array,
   },
+  lastAccess: {
+    type: Number, //for cache management. Doc with lower 'lastAccess' is replaced by newly accessed instance
+  }
 });
 
 module.exports = mongoose.model('Room', RoomSchema, 'rooms');
