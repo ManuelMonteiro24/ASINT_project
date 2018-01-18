@@ -1,10 +1,11 @@
 <template>
-  <div>
+  <div v-else>
     <form v-on:submit.prevent="submit">
       <label>Login</label><br>
-      <input type="text" ref="login"><br><br>
+      <input v-model="login" type="text"><br><br>
       <label>Password</label><br>
-      <input type="password" ref="pass"><br><br><br>
+      <input v-model="pw" type="password"><br><br><br>
+      <p v-if="error">Wrong login or password...</p>
       <input type="button" value="Sign In" v-on:click="submit"><br><br>
     </form>
     <router-link :to="{ name: 'home' }">Home</router-link>
@@ -13,9 +14,20 @@
 
 <script>
   export default {
+    data() {
+      return { error: false, redirect: false, login: '', pw: ''}
+    },
     methods: {
       submit: function() {
-        //TODO fetch GET /login/admin
+        var authHeader = new Headers({ 'Authorization': 'Basic ' + btoa(this.$data.login + ':' + this.$data.pw) }) //base64 encoding of ascii string
+        var _this = this;
+        fetch('/login/admin', { headers: authHeader, credentials: 'same-origin', cache: 'no-cache' }).then(function(resp) {
+          if(!resp.ok) {
+            _this.$data.error = true
+          } else {
+            _this.$router.push({ name: 'home' });
+          }
+        }).catch( err => { throw err; }); //TODO handler error
       },
     }
   }
@@ -41,12 +53,12 @@
     font-weight: bold;
   }
 
-  .ct-login {
-    color: #bd4929;
-  }
-
   a {
     display: inline-block;
     margin-top: 5%;
+  }
+
+  p {
+    color: red;
   }
 </style>

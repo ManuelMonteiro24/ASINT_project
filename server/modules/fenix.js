@@ -14,7 +14,7 @@ Fenix.getAccessToken = function(code) {
   }
 
   //Request access_token with received access_code; Use token to authenticate user into the database
-  return axios.post(config.tokenApi, {}, { params }).then(function(response) {
+  return axios.post(config.accessTokenApi, {}, { params }).then(function(response) {
     return response.data;
   });
 }

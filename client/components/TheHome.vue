@@ -6,10 +6,16 @@
 
   <div v-else class="home-root">
     <h1>Home Page</h1>
+
     <div v-if="!userState">
       <router-link :to="{ name: 'login', params: {}}">Login</router-link>
     </div>
-    <h2 v-else>Welcome {{ userProfile.displayName }}</h2>
+
+    <div v-else>
+      <h2>Welcome {{ userProfile.displayName }}</h2>
+      <h3 v-if="userProfile.admin">{{ userProfile.username }}</h3>
+    </div>
+
   </div>
 
 </template>
@@ -30,7 +36,7 @@
         var $data = this.$data
         $data.loadingData = true
 
-        fetch('/login/state', { credentials: 'include' }).then(function(resp) {
+        fetch('/login/state', { credentials: 'same-origin' }).then(function(resp) {
           return resp.json();
         }).then(function(data) {
           $data.loadingData = false
@@ -40,7 +46,7 @@
           } else {
             $data.userState = false
           }
-        }).catch(err => { throw err; });
+        }).catch(err => { throw err; }); //TODO handler error
       },
     },
   }
