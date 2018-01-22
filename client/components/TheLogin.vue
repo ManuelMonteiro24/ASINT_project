@@ -1,5 +1,5 @@
 <template>
-  <div class="root-elem">
+  <div>
       <h1>Login Page</h1>
       <button v-on:click="loginAdmin">Login as Admin</button>
       <button v-on:click="loginUser">Login as Regular User</button>

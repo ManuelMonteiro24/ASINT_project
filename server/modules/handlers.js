@@ -27,8 +27,8 @@ Handlers.adminLogin = function(req, res) {
         }
 
         var options = {
-          path: '/login/state',
-          maxAge: 10000, //TODO: remove this parameter; only for test purposes cookies expires in 10 sec
+          path: '/api',
+          maxAge: 30000, //TODO: remove this parameter; only for test purposes cookies expires in 10 sec
           //expiration: 0 TODO: uncomment for session cookie
           signed: true, //signed cookie to verify integrity
           secure: false,
@@ -51,7 +51,7 @@ Handlers.userLogin = function(req, res) {
     }
 
     var options = {
-      path: '/login/state',
+      path: '/api',
       maxAge: 10000, //TODO: remove this parameter; only for test purposes cookies expires in 10 sec
       //expiration: 0 TODO: uncomment for session cookie
       signed: true, //signed cookie to verify integrity
@@ -70,9 +70,15 @@ Handlers.userLogin = function(req, res) {
   });
 }
 
+Handlers.loginError = function(req, res) {
+  //TODO What to send when error occurs during authentication??
+  return res.send('An error has ocurred !!')
+}
+
+
 //Get user status. Check for 'fwa-authorization' state cookie
 //TODO: received error due to expired access token?  use refresh token : send error message
-Handlers.loginStatus = function(req, res) {
+Handlers.clientStatus = function(req, res) {
   if(!req.signedCookies['fwa-authorization'] && !req.signedCookies['fwa-authorization-admin']){ //check for authorization cookies existance
     return res.send({ status: false });
 
@@ -102,10 +108,25 @@ Handlers.loginStatus = function(req, res) {
     }
   }
 }
-
-Handlers.loginError = function(req, res) {
-  //TODO What to send when error occurs during authentication??
-  return res.send('An error has ocurred !!')
+Handlers.checkIOHistory = function(req, res) {
+  //TODO check if user is admin
+  if(req.signedCookies['fwa-authorization-admin']) {
+    return dbconnect.verifyAdminCookie(req.signedCookies['fwa-authorization-admin'].ll).then(function(verified) {
+      if(verified) {
+        dbconnect.getCheckIOList().then(function(result) {
+          console.log(result)
+          res.send(result)
+        });
+      } else {
+        console.log('Handler: admin cookie rejected')
+        res.status(401).end() //unauthorized
+      }
+    });
+  } else {
+    console.log('Handler: unauthorized access to /checkio/history')
+    res.status(401).end() //unauthorized
+  }
 }
+
 //export 'Handlers' module
 module.exports = Handlers;

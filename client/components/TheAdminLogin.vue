@@ -15,7 +15,7 @@
 <script>
   export default {
     data() {
-      return { error: false, redirect: false, login: '', pw: ''}
+      return { error: false, redirect: false, login: undefined, pw: undefined }
     },
     methods: {
       submit: function() {

@@ -2,9 +2,9 @@ const mongoose = require('mongoose');
 
 const CheckIOSchema = new mongoose.Schema({
   io: {
-    type: String,
+    type: Boolean, //in-true, out-false
   },
-  userId: {
+  username: {
     type: String,
   },
   timestamp: {
@@ -17,7 +17,7 @@ const CheckIOSchema = new mongoose.Schema({
 
 CheckIOSchema.pre('save', function(next) {
   this.timestamp = new Date(); //set timestamp before storing document in database
-  next(); 
+  next();
 });
 
 module.exports = mongoose.model('CheckIO', CheckIOSchema, 'checkio');

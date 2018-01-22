@@ -1,4 +1,5 @@
 const Admin = require('../../models/admin')
+const CheckIO = require('../../models/checkio');
 
 //Module for handling database querys, connections and interactions
 const Connectors = {}
@@ -56,7 +57,7 @@ Connectors.verifyAdminCredentials = function(credentials) {
 
 //Compare lastLogin information
 Connectors.verifyAdminCookie = function(lastLogin) {
-  ll = new Date(lastLogin)
+  var ll = new Date(lastLogin)
   var query = Admin.find()
   query.where('lastLogin').equals(ll)
 
@@ -67,5 +68,13 @@ Connectors.verifyAdminCookie = function(lastLogin) {
   });
 }
 
+Connectors.getCheckIOList = function(count, /*temporal window option?? from, to*/) {
+  var query = CheckIO.find({ }).setOptions({ limit: count })
+  return query.exec().then(function(docs) {
+    return docs;
+  }).catch( error => {
+    console.log(error);
+  });
+}
 
 module.exports = Connectors;
