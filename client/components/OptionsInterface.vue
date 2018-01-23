@@ -3,9 +3,8 @@
   <div v-if="admin">
     <input type="checkbox" v-on:click="showHistory"><label>Show check in/out history</label></input>
     <ul v-if="showCheckIOHist">
-      <li v-for="info in checkIOHist">
-        <p>{{ checkIO }}:</p>
-        <p>User: {{ checkInfo.username }}  Room: {{ checkInfo.roomId }}</p>
+      <li v-for="item in checkIOHist">
+        <p>{{ checkIO(item) }}: {{ item.username }}  Room: {{ item.roomID }}</p>
       </li>
     </ul>
   </div>
@@ -28,11 +27,15 @@
           this.$data.showCheckIOHist = false
           return
         }
-
         var _this = this
         return this.fetchHistory().then(function(data) {
-          _this.$data.checkIOHist = data;
-          _this.$data.showCheckIOHist = true
+          if(data) {
+            _this.$data.checkIOHist = data  ;
+            _this.$data.showCheckIOHist = true
+          } else {
+            console.log('_this.state = false')
+            _this.$emit('render')
+          }
         })
       },
       fetchHistory: function() {
@@ -40,9 +43,19 @@
           if(resp.ok) {
             return resp.json()
           }
-          return resp.status
+          return undefined
         }).catch(err => { throw err; });
+      },
+      checkIO: function(item) {
+        var text = item.io? 'Check-In': 'Check-Out'
+        return text;
       },
     },
   }
 </script>
+
+<style scoped>
+  li {
+    background-color: white;
+  }
+</style>

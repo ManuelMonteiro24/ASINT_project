@@ -114,11 +114,10 @@ Handlers.checkIOHistory = function(req, res) {
     return dbconnect.verifyAdminCookie(req.signedCookies['fwa-authorization-admin'].ll).then(function(verified) {
       if(verified) {
         dbconnect.getCheckIOList().then(function(result) {
-          console.log(result)
           res.send(result)
         });
       } else {
-        console.log('Handler: admin cookie rejected')
+        console.log('Handler: admin cookie unverified')
         res.status(401).end() //unauthorized
       }
     });

@@ -14,8 +14,7 @@
     <div v-else>
       <h2>Welcome {{ profile.displayName }}</h2>
       <h3 v-if="!profile.admin">{{ profile.username }}</h3>
-      <options-interface admin="profile.admin"></options-interface>
-
+      <options-interface admin="profile.admin" v-on:render="fetchData"></options-interface>
     </div>
 
   </div>
@@ -43,11 +42,9 @@
         }).then(function(data) {
           $data.loadingData = false
           if(data.status){
-            $data.userState = data.status
             $data.profile = _.omit(data, 'status')
-          } else {
-            $data.userState = false
           }
+          $data.userState = data.status
         }).catch(err => { throw err; }); //TODO handler error
       },
     },
