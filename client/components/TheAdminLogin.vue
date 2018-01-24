@@ -27,7 +27,7 @@
           } else {
             _this.$router.push({ name: 'home' });
           }
-        }).catch( err => { throw err; }); //TODO handler error
+        }).catch( err => { console.log(err) }); //TODO handler error
       },
     }
   }
