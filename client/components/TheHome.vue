@@ -14,7 +14,7 @@
     <div v-else >
       <h2>Welcome {{ profile.displayName }}</h2>
       <h3 v-if="!profile.admin">{{ profile.username }}</h3>
-      <button v-on:click="logout" v-on:render="fetchData">Logout</button>
+      <button v-on:click="logout" v-on:render="fetchData">Logout</button><br><br>
       <options-interface :admin="profile['admin']" v-on:render="fetchData"></options-interface>
 
     </div>
