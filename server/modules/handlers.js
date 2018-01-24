@@ -70,6 +70,46 @@ Handlers.userLogin = function(req, res) {
   });
 }
 
+Handlers.logout = function(req, res) {
+  if(!req.signedCookies['fwa-authorization'] && !req.signedCookies['fwa-authorization-admin']){ //check for authorization cookies existance
+    return res.send('An error has ocurred !!, user cookie not set')
+  } else {
+    if(req.signedCookies['fwa-authorization']){ //If it's user
+
+      var cookie = {
+      }
+
+      var options = {
+        path: '/api',
+        maxAge: 0, //TODO: remove this parameter; only for test purposes cookies expires in 10 sec
+        //expiration: 0 TODO: uncomment for session cookie
+        signed: true, //signed cookie to verify integrity
+        secure: false,
+      }
+
+      res.cookie('fwa-authorization', cookie, options).redirect('/')
+      //res.clearCookie('fwa-authorization', { path: '/api' });
+      //return res.sendStatus(200);
+    } else if(req.signedCookies['fwa-authorization-admin']){ //If it's admin
+    var cookie = {
+      ll: verified,
+    }
+
+    var options = {
+      path: '/api',
+      maxAge: 0, //TODO: remove this parameter; only for test purposes cookies expires in 10 sec
+      //expiration: 0 TODO: uncomment for session cookie
+      signed: true, //signed cookie to verify integrity
+      secure: false,
+    }
+
+    res.cookie('fwa-authorization-admin', cookie, options).end();
+      //res.clearCookie('fwa-authorization', { path: '/api' });
+      //return res.sendStatus(200);
+    }
+  }
+}
+
 Handlers.loginError = function(req, res) {
   //TODO What to send when error occurs during authentication??
   return res.send('An error has ocurred !!')
