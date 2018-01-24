@@ -1,6 +1,6 @@
 <template>
 
-  <div v-if="admin">
+  <div v-if="admin === true">
     <input type="checkbox" v-on:click="showHistory"><label>Show check in/out history</label></input>
     <ul v-if="showCheckIOHist">
       <li v-for="item in checkIOHist">
@@ -35,7 +35,6 @@
             _this.$data.checkIOHist = data  ;
             _this.$data.showCheckIOHist = true
           } else {
-            console.log('_this.state = false')
             _this.$emit('render')
           }
         })

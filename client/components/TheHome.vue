@@ -11,11 +11,11 @@
       <router-link :to="{ name: 'login', params: {}}">Login</router-link>
     </div>
 
-    <div v-else>
+    <div v-else >
       <h2>Welcome {{ profile.displayName }}</h2>
       <h3 v-if="!profile.admin">{{ profile.username }}</h3>
-      <button v-on:click="logout">Logout</button>
-      <options-interface admin="profile.admin" v-on:render="fetchData"></options-interface>
+      <button v-on:click="logout" v-on:render="fetchData">Logout</button>
+      <options-interface :admin="profile['admin']" v-on:render="fetchData"></options-interface>
 
     </div>
 
@@ -37,13 +37,12 @@
     methods: {
       logout: function() {
         var _this = this
-        fetch('/logout', { credentials: 'same-origin' }).then(function(resp){
+        fetch('/api/logout', { credentials: 'same-origin' }).then(function(resp){
           if(resp.ok) {
-            _this.$emit('render');
-            console.log('received response from cookie');
+            //fetch user profile information after navigation
+            _this.fetchData()
           } else {
             _this.$data.error = true
-            console.log('error deleting cookie');
           }
         }).catch( err => { throw err; }); //TODO handler error
       },
