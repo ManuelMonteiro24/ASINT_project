@@ -137,5 +137,25 @@ Handlers.checkIOHistory = function(req, res) {
   }
 }
 
+Handlers.searchRooms = function(req, res) {
+  if(req.signedCookies['fwa-authorization']){ //If it's user
+    return fenix.searchRooms(req.params.search)
+    .then(function(data){
+      res.send(data);
+    }).catch(function(error) { //Log error message
+      if(error.response) {
+        console.log('\nERROR: ' + error.message + '\nDescription: ' + error.response.data.error_description + '\n')
+      } else {
+        console.log(error)
+      }
+      res.redirect('/login/error') //TODO error page
+    });
+
+  } else {
+    console.log('error on room search')
+    res.status(401).end() //unauthorized
+  }
+}
+
 //export 'Handlers' module
 module.exports = Handlers;

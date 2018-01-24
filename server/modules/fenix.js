@@ -39,4 +39,18 @@ Fenix.getRefreshToken = function(refreshToken) {
 
 }
 
+Fenix.searchRooms = function(search) {
+  return axios.get(config.spacesInfoApi).then(function(response) {
+    var profile = response.data;
+    return {
+      status: true,
+      campus: profile.campus,
+      roles: profile.roles.map(a => a.type),
+      displayName: profile.displayName,
+      username: profile.username,
+      mail: profile.email,
+    };
+  })
+}
+
 module.exports = Fenix;
