@@ -125,21 +125,16 @@ Handlers.clientStatus = function(req, res) {
 
 Handlers.checkIOHistory = function(req, res) {
   //TODO check if user is admin
-  if(req.signedCookies['fwa-authorization-admin']) {
-    return dbconnect.verifyAdminCookie(req.signedCookies['fwa-authorization-admin'].ll).then(function(verified) {
-      if(verified) {
-        dbconnect.getCheckIOList().then(function(result) {
-          res.send(result)
-        });
-      } else {
-        console.log('Handler: admin cookie unverified')
-        res.status(401).end() //unauthorized
-      }
-    });
-  } else {
-    console.log('Handler: unauthorized access to /checkio/history')
-    res.status(401).end() //unauthorized
-  }
+  return dbconnect.verifyAdminCookie(req.signedCookies['fwa-authorization-admin'].ll).then(function(verified) {
+    if(verified) {
+      dbconnect.getCheckIOList().then(function(result) {
+        res.send(result)
+      });
+    } else {
+      console.log('Handler: admin cookie unverified')
+      res.status(401).end() //unauthorized
+    }
+  });
 }
 
 Handlers.searchRooms = function(req, res) {
