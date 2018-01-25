@@ -1,6 +1,6 @@
 <template>
   <div class="main">
-    <div class="header">
+    <div class="header css-main-font">
       <h2>Fénix WebApp</h2>
     </div>
     <div class="container">
@@ -21,6 +21,7 @@
     position: fixed;
     width: 100%;
     height: 100%;
+    text-align: center;
   }
   .header {
     position: absolute;
@@ -40,5 +41,7 @@
     text-align: center;
     background-color: #dfe8e5;
   }
-
+  .css-main-font {
+    font-family: monospace;
+  }
 </style>

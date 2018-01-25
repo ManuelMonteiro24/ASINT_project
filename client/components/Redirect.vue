@@ -1,5 +1,5 @@
 <template>
-  <p>You will be redirected shortly...</p>
+  <p class="css-main-font">You will be redirected shortly...</p>
 </template>
 
 <script>

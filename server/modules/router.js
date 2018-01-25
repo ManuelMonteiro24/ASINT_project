@@ -14,7 +14,7 @@ router.get('/api/logout', Handlers.logout);
 
 router.get('/api/state', Handlers.clientStatus);
 router.get('/api/checkio/history', Handlers.checkIOHistory);
-router.get('/api/rooms/find/:search', Handlers.searchRooms);
+router.get('/api/rooms/find/:search?', Handlers.searchRooms);
 //router.get('/api/checkio/in', Handlers.checkIn); //Room checkin endpoint
 //router.get('/api/checkio/out', Handlers.checkOut); //Room checkout endpoint
 //TODO router.get('/api/rooms/:id/messages')

@@ -1,5 +1,5 @@
 <template>
-  <div v-else>
+  <div class="css-main-font">
     <form v-on:submit.prevent="submit">
       <label>Login</label><br>
       <input v-model="login" type="text"><br><br>
@@ -44,8 +44,7 @@
 
   label, input[type="text"], input[type="password"] {
     margin-top: 9px;
-    font-family: "Times New Roman";
-    font-size: 22px;
+    font-size: 18px;
   }
 
   input[type="button"] {

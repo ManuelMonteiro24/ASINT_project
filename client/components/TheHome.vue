@@ -1,10 +1,10 @@
 <template>
 
-  <div v-if="loadingData">
+  <div v-if="loadingData" class="css-main-font">
     <h1>Loading Home Page</h1>
   </div>
 
-  <div v-else>
+  <div v-else class="css-main-font">
     <h1>Home Page</h1>
 
     <div v-if="!userState">
@@ -16,7 +16,6 @@
       <h3 v-if="!profile.admin">{{ profile.username }}</h3>
       <button v-on:click="logout" v-on:render="fetchData">Logout</button><br><br>
       <options-interface :admin="profile['admin']" v-on:render="fetchData"></options-interface>
-
     </div>
 
   </div>

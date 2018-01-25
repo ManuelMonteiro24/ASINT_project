@@ -82,7 +82,7 @@ Handlers.logout = function(req, res) {
 
 Handlers.loginError = function(req, res) {
   //TODO What to send when error occurs during authentication??
-  return res.send('An error has ocurred !!')
+  return res.send('An error has ocurred !')
 }
 
 
@@ -139,9 +139,8 @@ Handlers.checkIOHistory = function(req, res) {
 
 Handlers.searchRooms = function(req, res) {
   if(req.signedCookies['fwa-authorization']){ //If it's user
-    return fenix.searchRooms(req.params.search)
-    .then(function(data){
-      res.send(data);
+    res.send(fenix.searchRooms(req.query))/*.then(function(data){
+      data);
     }).catch(function(error) { //Log error message
       if(error.response) {
         console.log('\nERROR: ' + error.message + '\nDescription: ' + error.response.data.error_description + '\n')
@@ -149,10 +148,10 @@ Handlers.searchRooms = function(req, res) {
         console.log(error)
       }
       res.redirect('/login/error') //TODO error page
-    });
+    });*/
 
   } else {
-    console.log('error on room search')
+    console.log('Handler: unauthorized access to /rooms/find/')
     res.status(401).end() //unauthorized
   }
 }

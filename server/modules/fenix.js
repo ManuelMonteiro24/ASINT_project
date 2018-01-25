@@ -39,8 +39,20 @@ Fenix.getRefreshToken = function(refreshToken) {
 
 }
 
-Fenix.searchRooms = function(search) {
-  return axios.get(config.spacesInfoApi).then(function(response) {
+Fenix.searchRooms = function(params) {
+  //TODO fetch 'CAMPUS' and make recursive call for each one
+  var base = config.spacesInfoApi
+  fetch(base).then()
+  var recursive = function(params) {
+    var uri = base + params
+    fetch(uri, { options }).then(function(resp) {
+      return res.json()
+    }).catch()
+  }
+
+  console.log(params);
+  return { yo: 1 }
+  /*return axios.get(config.spacesInfoApi).then(function(response) {
     var profile = response.data;
     return {
       status: true,
@@ -50,7 +62,7 @@ Fenix.searchRooms = function(search) {
       username: profile.username,
       mail: profile.email,
     };
-  })
+  })*/
 }
 
 module.exports = Fenix;

@@ -20,7 +20,7 @@ module.exports = {
         // Transform it with babel
         loader: 'babel-loader',
         // don't transform node_modules folder (which don't need to be compiled)
-        exclude: /node_modules/
+        //exclude: /node_modules/
       },
 
       {
@@ -32,6 +32,11 @@ module.exports = {
         use: {
           loader: 'vue-loader'
         }
+      },
+
+      {
+        test: /\.css$/,
+        loader: 'css-loader',
       }
     ]
   },
