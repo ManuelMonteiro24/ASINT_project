@@ -10,11 +10,11 @@ router.get('/', Handlers.home);
 router.get('/login/admin', Handlers.adminLogin);
 router.get('/login/user', Handlers.userLogin);
 router.get('/login/error', Handlers.loginError);
-router.get('/api/logout', Handlers.logout);
 
-router.get('/api/state', Handlers.clientStatus);
-router.get('/api/checkio/history', Handlers.checkIOHistory);
-router.get('/api/rooms/find/:search?', Handlers.searchRooms);
+router.get('/api/logout', Handlers.endpointAuthentication, Handlers.logout);
+router.get('/api/state', Handlers.endpointAuthentication, Handlers.clientStatus);
+router.get('/api/checkio/history', Handlers.endpointAuthentication, Handlers.checkIOHistory);
+router.get('/api/rooms/find', Handlers.endpointAuthentication, Handlers.searchRooms);
 //router.get('/api/checkio/in', Handlers.checkIn); //Room checkin endpoint
 //router.get('/api/checkio/out', Handlers.checkOut); //Room checkout endpoint
 //TODO router.get('/api/rooms/:id/messages')

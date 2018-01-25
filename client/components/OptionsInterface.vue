@@ -64,7 +64,7 @@
         console.log(this.roomIn)
         return this.fetchRoom().then(function(data) {
           if(typeof data !== 'number') {
-            _this.$data.checkIOHist = data  ;
+            _this.$data.rooms = data  ;
           } else if (data === 401){
             _this.$emit('render')
           }
@@ -72,11 +72,10 @@
       },
       fetchRoom: function() {
         //TODO search params
-        console.log(this.roomIn)
         var params = { search: this.roomIn }
-        console.log(params)
         var url = new URL('http://localhost:3000/api/rooms/find')
         Object.keys(params).forEach(key => url.searchParams.append(key, params[key]))
+
         return fetch(url, { credentials: 'same-origin' }).then(function(resp) {
           if(resp.ok) {
             return resp.json();

@@ -1,5 +1,6 @@
 const axios = require('axios');
 const config = require('./config').fenix;
+const _ = require('underscore');
 
 const Fenix = {}
 
@@ -24,7 +25,6 @@ Fenix.getPersonalInfo = function(access_token) {
   return axios.get(config.personalInfoApi, { params }).then(function(response) {
     var profile = response.data;
     return {
-      status: true,
       campus: profile.campus,
       roles: profile.roles.map(a => a.type),
       displayName: profile.displayName,
@@ -39,30 +39,45 @@ Fenix.getRefreshToken = function(refreshToken) {
 
 }
 
-Fenix.searchRooms = function(params) {
-  //TODO fetch 'CAMPUS' and make recursive call for each one
+Fenix.searchRooms = function(search) {
+  //TODO fetch 'CAMPUS' and make recursive call for each on
+  console.log(search)
   var base = config.spacesInfoApi
-  fetch(base).then()
-  var recursive = function(params) {
-    var uri = base + params
-    fetch(uri, { options }).then(function(resp) {
-      return res.json()
-    }).catch()
+  var found = []
+
+  var recursiveQuery = function(param) {
+    var uri = base
+    if(param) { uri = uri + '/' + param }
+
+    return axios.get(uri).then(function(resp) {
+      var promises = []
+      var _data
+
+      if(resp.data.type === 'ROOM') {
+         return resp.data
+      } else {
+
+        if(!Array.isArray(resp.data)) {
+          _data = resp.data.containedSpaces
+        } else {
+          _data = resp.data
+        }
+
+        for(var i = 0; i < _data.length; i++) {
+          if(_data[i].type !== 'ROOM' || (_data[i].type === 'ROOM' && _data[i].name.includes(search))) {
+            promises.push(recursiveQuery(_data[i].id))
+          }
+        }
+      }
+
+      return Promise.all(promises)
+    });
   }
 
-  console.log(params);
-  return { yo: 1 }
-  /*return axios.get(config.spacesInfoApi).then(function(response) {
-    var profile = response.data;
-    return {
-      status: true,
-      campus: profile.campus,
-      roles: profile.roles.map(a => a.type),
-      displayName: profile.displayName,
-      username: profile.username,
-      mail: profile.email,
-    };
-  })*/
+  return recursiveQuery().then(function(resolves) {
+    var ret = _.flatten(resolves)
+    return _.compact(ret)
+  })
 }
 
 module.exports = Fenix;

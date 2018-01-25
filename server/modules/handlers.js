@@ -3,8 +3,25 @@ const _ = require('underscore');
 const dbconnect = require('./dbconnect');
 const fenix = require('./fenix');
 
-
 const Handlers = {}
+
+Handlers.endpointAuthentication = function(req, res, next) {
+  if(!req.signedCookies['fwa-authorization'] && !req.signedCookies['fwa-authorization-admin']){ //check for authorization cookies existance
+    console.log('Middleware: unauthorized api access to ', req.originalUrl)
+    res.status(401).end() //unauthorized
+  } else if(req.signedCookies['fwa-authorization']) {
+    next()
+  } else if(req.signedCookies['fwa-authorization-admin']) {
+    dbconnect.verifyAdminCookie(req.signedCookies['fwa-authorization-admin'].ll).then(function(verified) {
+      if(verified) {
+        next()
+      } else {
+        console.log('Middleware: admin cookie rejected!')
+        res.status(401).end() //unauthorized
+      }
+    });
+  }
+}
 
 Handlers.home = function(req, res) {
   res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
@@ -52,7 +69,7 @@ Handlers.userLogin = function(req, res) {
 
     var options = {
       path: '/api',
-      maxAge: 10000, //TODO: remove this parameter; only for test purposes cookies expires in 10 sec
+      maxAge: 60000, //TODO: remove this parameter; only for test purposes cookies expires in 10 sec
       //expiration: 0 TODO: uncomment for session cookie
       signed: true, //signed cookie to verify integrity
       secure: false,
@@ -75,8 +92,8 @@ Handlers.logout = function(req, res) {
     res.clearCookie('fwa-authorization', { path: '/api', signed: true, secure: false }).end()
   } else if(req.signedCookies['fwa-authorization-admin']){ //If it's admin
     res.clearCookie('fwa-authorization-admin', { path: '/api', signed: true, secure: false } ).end()
-  }else{
-    return res.send('An error has ocurred !!, user cookie not set')
+  } else{
+    res.send('An error has ocurred !!, user cookie not set')
   }
 }
 
@@ -89,35 +106,23 @@ Handlers.loginError = function(req, res) {
 //Get user status. Check for 'fwa-authorization' state cookie
 //TODO: received error due to expired access token?  use refresh token : send error message
 Handlers.clientStatus = function(req, res) {
-  if(!req.signedCookies['fwa-authorization'] && !req.signedCookies['fwa-authorization-admin']){ //check for authorization cookies existance
-    return res.send({ status: false });
+  if(req.signedCookies['fwa-authorization']){ //If it's user
+    return fenix.getPersonalInfo(req.signedCookies['fwa-authorization'].atk).then(function(data){
+      res.send(data);
+    }).catch(function(error) { //Log error message
+      if(error.response) {
+        console.log('\nERROR: ' + error.message + '\nDescription: ' + error.response.data.error_description + '\n')
+      } else {
+        console.log(error)
+      }
+      res.redirect('/login/error') //TODO error page
+    });
 
-  } else {
-    if(req.signedCookies['fwa-authorization']){ //If it's user
-      return fenix.getPersonalInfo(req.signedCookies['fwa-authorization'].atk)
-      .then(function(data){
-        res.send(data);
-      }).catch(function(error) { //Log error message
-        if(error.response) {
-          console.log('\nERROR: ' + error.message + '\nDescription: ' + error.response.data.error_description + '\n')
-        } else {
-          console.log(error)
-        }
-        res.redirect('/login/error') //TODO error page
-      });
-
-    } else if(req.signedCookies['fwa-authorization-admin']){ //If it's admin
-      return dbconnect.verifyAdminCookie(req.signedCookies['fwa-authorization-admin'].ll).then(function(verified) {
-        if(verified) {
-          res.send({ status: true, displayName: 'System Administrator', admin: true })
-        } else {
-          console.log('Handler: admin cookie rejected')
-          res.status(401).end() //unauthorized
-        }
-      });
-    }
+  } else if(req.signedCookies['fwa-authorization-admin']){ //If it's admin
+    res.send({ displayName: 'System Administrator', admin: true })
   }
 }
+
 Handlers.checkIOHistory = function(req, res) {
   //TODO check if user is admin
   if(req.signedCookies['fwa-authorization-admin']) {
@@ -138,22 +143,16 @@ Handlers.checkIOHistory = function(req, res) {
 }
 
 Handlers.searchRooms = function(req, res) {
-  if(req.signedCookies['fwa-authorization']){ //If it's user
-    res.send(fenix.searchRooms(req.query))/*.then(function(data){
-      data);
-    }).catch(function(error) { //Log error message
-      if(error.response) {
-        console.log('\nERROR: ' + error.message + '\nDescription: ' + error.response.data.error_description + '\n')
-      } else {
-        console.log(error)
-      }
-      res.redirect('/login/error') //TODO error page
-    });*/
-
-  } else {
-    console.log('Handler: unauthorized access to /rooms/find/')
-    res.status(401).end() //unauthorized
-  }
+  return fenix.searchRooms(req.query.search).then(function(data){
+    res.send(data);
+  }).catch(function(error) { //Log error message
+    if(error.response) {
+      console.log('\nERROR: ' + error.message + '\nDescription: ' + error.response.data.error_description + '\n')
+    } else {
+      console.log(error)
+    }
+    res.redirect('/login/error') //TODO error page
+  });
 }
 
 //export 'Handlers' module
