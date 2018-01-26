@@ -34,13 +34,21 @@ Fenix.getPersonalInfo = function(access_token) {
   })
 }
 
-//TODO: function for refreshing token
 Fenix.getRefreshToken = function(refreshToken) {
+  var params = {
+    client_id: config.clientId,
+    client_secret: config.clientSecret,
+    refresh_token: refreshToken,
+    grant_type: 'refresh_token',
+  }
 
+  //Request new access_token with received refresh_token
+  return axios.post(config.refreshTokenApi, {}, { params }).then(function(response) {
+    return response.data;
+  });
 }
 
 Fenix.searchRooms = function(search) {
-  //TODO fetch 'CAMPUS' and make recursive call for each on
   var base = config.spacesInfoApi
   var found = []
 

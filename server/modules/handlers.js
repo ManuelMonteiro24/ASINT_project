@@ -101,16 +101,38 @@ Handlers.loginError = function(req, res) {
 }
 
 //Get user status. Check for 'fwa-authorization' state cookie
-//TODO: received error due to expired access token?  use refresh token : send error message
 Handlers.clientStatus = function(req, res) {
-  if(res.locals.admin) { //If it's user
+  if(res.locals.admin) { //If it's admin
     res.send({ displayName: 'System Administrator', admin: true })
-  } else { //If it's admin
+  } else { //If it's user
     return fenix.getPersonalInfo(req.signedCookies['fwa-authorization'].atk).then(function(data){
       res.send(data);
     }).catch(function(error) { //Log error message
       if(error.response) {
         console.log('\nERROR: ' + error.message + '\nDescription: ' + error.response.data.error_description + '\n')
+        fenix.getRefreshToken(req.signedCookies['fwa-authorization'].rtk).then(function(data){
+          //Create cookie
+          var cookie = {
+            atk: data.access_token,
+            rtk: req.signedCookies['fwa-authorization'].rtk,
+          }
+
+          var options = {
+            path: '/api',
+            maxAge: 60000, //TODO: remove this parameter; only for test purposes cookies expires in 10 sec
+            //expiration: 0 TODO: uncomment for session cookie
+            signed: true, //signed cookie to verify integrity
+            secure: false,
+          }
+          res.cookie('fwa-authorization', cookie, options).redirect('/')
+        }).catch(error => { //Log error response
+          if(error.response) {
+            console.log('\nERROR: ' + error.message + '\nDescription: ' + error.response.data.error_description + '\n')
+          } else {
+            console.log(error)
+          }
+          return res.redirect('/login/error') //TODO error page
+        });
       } else {
         console.log(error)
       }
@@ -120,7 +142,6 @@ Handlers.clientStatus = function(req, res) {
 }
 
 Handlers.checkIOHistory = function(req, res) {
-  //TODO check if user is admin
   if(res.locals.admin) {
     return dbconnect.verifyAdminCookie(req.signedCookies['fwa-authorization-admin'].ll).then(function(verified) {
       if(verified) {
