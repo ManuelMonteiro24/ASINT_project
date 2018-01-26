@@ -3,6 +3,7 @@
     <p class="p1">Space: {{ info.description }} --> <span v-if="info.parentSpace.type==='FLOOR'">Floor</span> {{ info.parentSpace.name }}, {{ info.topLevelSpace.name }}</p>
     <p class="p2">ExamCapacity: {{ info.capacity.exam }}&nbspNormalCapacity: {{ info.capacity.exam }}</p>
     <p class="p3">{{ info.events.length }} scheduled events</p>
+    <button v-on:click="checkUser" >check</button>
   </div>
 </template>
 
@@ -12,10 +13,12 @@
     created() {
       console.log(this.info)
     },
-    data() {
-      return {}
-    },
-  }
+    methods: {
+      checkUser: function() {
+        // TODO this.$router.push({name: 'adminlogin'});
+      }
+    }
+}
 </script>
 
 <style scoped>

@@ -47,8 +47,7 @@ Handlers.adminLogin = function(req, res) {
 
         var options = {
           path: '/api',
-          maxAge: 30000, //TODO: remove this parameter; only for test purposes cookies expires in 10 sec
-          //expiration: 0 TODO: uncomment for session cookie
+          expiration: 0,
           signed: true, //signed cookie to verify integrity
           secure: false,
         }
@@ -71,8 +70,7 @@ Handlers.userLogin = function(req, res) {
 
     var options = {
       path: '/api',
-      maxAge: 60000, //TODO: remove this parameter; only for test purposes cookies expires in 10 sec
-      //expiration: 0 TODO: uncomment for session cookie
+      expiration: 0,
       signed: true, //signed cookie to verify integrity
       secure: false,
     }
@@ -110,21 +108,20 @@ Handlers.clientStatus = function(req, res) {
     }).catch(function(error) { //Log error message
       if(error.response) {
         console.log('\nERROR: ' + error.message + '\nDescription: ' + error.response.data.error_description + '\n')
-        fenix.getRefreshToken(req.signedCookies['fwa-authorization'].rtk).then(function(data){
+        fenix.getRefreshToken(req.signedCookies['fwa-authorization'].rtk).then(function(data_refresh){
           //Create cookie
           var cookie = {
-            atk: data.access_token,
+            atk: data_refresh.access_token,
             rtk: req.signedCookies['fwa-authorization'].rtk,
           }
 
           var options = {
             path: '/api',
-            maxAge: 60000, //TODO: remove this parameter; only for test purposes cookies expires in 10 sec
-            //expiration: 0 TODO: uncomment for session cookie
+            expiration: 0,
             signed: true, //signed cookie to verify integrity
             secure: false,
           }
-          res.cookie('fwa-authorization', cookie, options).redirect('/')
+          res.cookie('fwa-authorization', cookie, options)
           return fenix.getPersonalInfo(req.signedCookies['fwa-authorization'].atk).then(function(data){
             res.send(data);
           }).catch(error => {

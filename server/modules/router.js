@@ -9,7 +9,7 @@ router.get('/', Handlers.home);
 //Login routes
 router.get('/login/admin', Handlers.adminLogin);
 router.get('/login/user', Handlers.userLogin);
-router.get('/login/error', Handlers.loginError);
+router.get('/login/error', Handlers.loginError); //esta route nao devia ficar privada?? apenas entre o servidor???
 router.get('/logout', Handlers.logout);
 
 router.get('/api/state', Handlers.endpointAuthentication, Handlers.clientStatus);
