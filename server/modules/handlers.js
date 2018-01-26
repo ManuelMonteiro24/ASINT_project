@@ -125,6 +125,16 @@ Handlers.clientStatus = function(req, res) {
             secure: false,
           }
           res.cookie('fwa-authorization', cookie, options).redirect('/')
+          return fenix.getPersonalInfo(req.signedCookies['fwa-authorization'].atk).then(function(data){
+            res.send(data);
+          }).catch(error => {
+            if(error.response) {
+              console.log('\nERROR: ' + error.message + '\nDescription: ' + error.response.data.error_description + '\n')
+            } else {
+              console.log(error)
+            }
+            return res.redirect('/login/error') //TODO error page
+          });
         }).catch(error => { //Log error response
           if(error.response) {
             console.log('\nERROR: ' + error.message + '\nDescription: ' + error.response.data.error_description + '\n')
