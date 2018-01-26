@@ -14,8 +14,8 @@
     <div v-else>
       <h2>Welcome {{ profile.displayName }}</h2>
       <h3 v-if="!profile.admin">{{ profile.username }}</h3>
+      <interface :admin="profile['admin']" v-on:render="fetchData"></interface>
       <button v-on:click="logout" v-on:render="fetchData">Logout</button><br><br>
-      <options-interface :admin="profile['admin']" v-on:render="fetchData"></options-interface>
     </div>
 
   </div>
@@ -36,12 +36,8 @@
     methods: {
       logout: function() {
         var _this = this
-        fetch('/api/logout', { credentials: 'same-origin' }).then(function(resp){
-          if(resp.ok) {
-            _this.fetchData()
-          } else {
-            _this.$data.error = true
-          }
+        fetch('/logout', { credentials: 'same-origin' }).then(function(resp){
+          _this.fetchData()
         }).catch( err => { throw err; }); //TODO handler error
       },
       fetchData: function() {
@@ -58,7 +54,7 @@
             $data.profile = _.omit(data, 'status')
             $data.userState = true //authenticated
           } else {
-            $data.userState = false 
+            $data.userState = false
           }
         }).catch(err => { throw err; }); //TODO handler error
       },
@@ -67,4 +63,10 @@
 </script>
 
 <style>
+  button {
+    margin-top: 10px;
+  }
+  .scrollable {
+    overflow-y: scroll;
+  }
 </style>

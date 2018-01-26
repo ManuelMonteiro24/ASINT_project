@@ -10,10 +10,12 @@ Handlers.endpointAuthentication = function(req, res, next) {
     console.log('Middleware: unauthorized api access to ', req.originalUrl)
     res.status(401).end() //unauthorized
   } else if(req.signedCookies['fwa-authorization']) {
+    res.locals.admin = false;
     next()
   } else if(req.signedCookies['fwa-authorization-admin']) {
     dbconnect.verifyAdminCookie(req.signedCookies['fwa-authorization-admin'].ll).then(function(verified) {
       if(verified) {
+        res.locals.admin = true;
         next()
       } else {
         console.log('Middleware: admin cookie rejected!')
@@ -88,25 +90,22 @@ Handlers.userLogin = function(req, res) {
 }
 
 Handlers.logout = function(req, res) {
-  if(req.signedCookies['fwa-authorization']){ //If it's user
-    res.clearCookie('fwa-authorization', { path: '/api', signed: true, secure: false }).end()
-  } else if(req.signedCookies['fwa-authorization-admin']){ //If it's admin
-    res.clearCookie('fwa-authorization-admin', { path: '/api', signed: true, secure: false } ).end()
-  } else{
-    res.send('An error has ocurred !!, user cookie not set')
-  }
+  res.clearCookie('fwa-authorization', { path: '/api', signed: true, secure: false })
+  .clearCookie('fwa-authorization-admin', { path: '/api', signed: true, secure: false })
+  .end()
 }
 
 Handlers.loginError = function(req, res) {
   //TODO What to send when error occurs during authentication??
-  return res.send('An error has ocurred !')
+  return res.send('An error has ocurred!')
 }
-
 
 //Get user status. Check for 'fwa-authorization' state cookie
 //TODO: received error due to expired access token?  use refresh token : send error message
 Handlers.clientStatus = function(req, res) {
-  if(req.signedCookies['fwa-authorization']){ //If it's user
+  if(res.locals.admin) { //If it's user
+    res.send({ displayName: 'System Administrator', admin: true })
+  } else { //If it's admin
     return fenix.getPersonalInfo(req.signedCookies['fwa-authorization'].atk).then(function(data){
       res.send(data);
     }).catch(function(error) { //Log error message
@@ -117,37 +116,49 @@ Handlers.clientStatus = function(req, res) {
       }
       res.redirect('/login/error') //TODO error page
     });
-
-  } else if(req.signedCookies['fwa-authorization-admin']){ //If it's admin
-    res.send({ displayName: 'System Administrator', admin: true })
   }
 }
 
 Handlers.checkIOHistory = function(req, res) {
   //TODO check if user is admin
-  return dbconnect.verifyAdminCookie(req.signedCookies['fwa-authorization-admin'].ll).then(function(verified) {
-    if(verified) {
-      dbconnect.getCheckIOList().then(function(result) {
-        res.send(result)
-      });
-    } else {
-      console.log('Handler: admin cookie unverified')
-      res.status(401).end() //unauthorized
-    }
-  });
+  if(res.locals.admin) {
+    return dbconnect.verifyAdminCookie(req.signedCookies['fwa-authorization-admin'].ll).then(function(verified) {
+      if(verified) {
+        dbconnect.getCheckIOList().then(function(result) {
+          res.send(result)
+        });
+      } else {
+        console.log('Handler: admin cookie unverified')
+        res.status(401).end() //unauthorized
+      }
+    });
+  }
 }
 
 Handlers.searchRooms = function(req, res) {
-  return fenix.searchRooms(req.query.search).then(function(data){
-    res.send(data);
-  }).catch(function(error) { //Log error message
-    if(error.response) {
-      console.log('\nERROR: ' + error.message + '\nDescription: ' + error.response.data.error_description + '\n')
+  return dbconnect.searchCache(req.query.search).then(function(hit) {
+    if(hit) { //If search it's a cache hit
+      console.log('Handler: cache hit for query ', req.query.search)
+      return res.send(hit.value)
     } else {
-      console.log(error)
+      return fenix.searchRooms(req.query.search).then(function(data) {
+        dbconnect.cacheResults(req.query.search, data).then(function(success) {
+          if(success){ console.log('Handler: room search results stored in cache') }
+        }).catch(function(err) {
+          console.log('Handlers: failed to cache results\n', err)
+        })
+        res.send(data);
+
+      }).catch(function(error) { //Log error message
+        if(error.response) {
+          console.log('\nERROR: ' + error.message + '\nDescription: ' + error.response.data.error_description + '\n')
+        } else {
+          console.log(error)
+        }
+        res.redirect('/login/error') //TODO error page
+      });
     }
-    res.redirect('/login/error') //TODO error page
-  });
+  })
 }
 
 //export 'Handlers' module

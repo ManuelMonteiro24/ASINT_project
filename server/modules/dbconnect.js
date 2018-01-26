@@ -1,5 +1,8 @@
-const Admin = require('../../models/admin')
+const crypto = require('crypto');
+
+const Admin = require('../../models/admin');
 const CheckIO = require('../../models/checkio');
+const Cache = require('../../models/cache');
 
 //Module for handling database querys, connections and interactions
 const Connectors = {}
@@ -68,13 +71,50 @@ Connectors.verifyAdminCookie = function(lastLogin) {
   });
 }
 
+//TODO implement 'count' and temporal window option
 Connectors.getCheckIOList = function(count, /*temporal window option?? from, to*/) {
-  var query = CheckIO.find({ }).setOptions({ limit: count })
+  var query = CheckIO.find().setOptions({ limit: count })
+  query.sort('-timestamp')
   return query.exec().then(function(docs) {
+    console.log(docs)
     return docs;
   }).catch( error => {
     console.log(error);
   });
 }
+
+Connectors.cacheResults = function(query, results) {
+  var hash256 = crypto.createHash('sha256')
+  //Hash query string sent by client
+  hash256.update(query)
+  var doc = new Cache({
+    _id: hash256.digest('base64'),
+    value: results,
+    lastAccess: new Date(),
+  })
+  //Save to database
+  return doc.save()
+}
+
+Connectors.searchCache = function(query) {
+  var hash256 = crypto.createHash('sha256')
+  hash256.update(query)
+
+  var query = Cache.findById(hash256.digest('base64'))
+
+  return query.exec().then(function(doc) {
+    if(doc){
+      doc.lastAccess = new Date()
+      doc.save()
+      return doc
+    }
+    return undefined
+
+  }).catch( error => {
+    console.log(error)
+  })
+
+}
+
 
 module.exports = Connectors;

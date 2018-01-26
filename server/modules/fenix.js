@@ -41,10 +41,10 @@ Fenix.getRefreshToken = function(refreshToken) {
 
 Fenix.searchRooms = function(search) {
   //TODO fetch 'CAMPUS' and make recursive call for each on
-  console.log(search)
   var base = config.spacesInfoApi
   var found = []
 
+  //Recursive function for
   var recursiveQuery = function(param) {
     var uri = base
     if(param) { uri = uri + '/' + param }
