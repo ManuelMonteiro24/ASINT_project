@@ -4,14 +4,20 @@ const CheckIOSchema = new mongoose.Schema({
   io: {
     type: Boolean, //in-true, out-false
   },
+  displayName: {
+    type: String,
+  },
   username: {
+    type: String,
+  },
+  roomId: {
+    type: String,
+  },
+  roomName: {
     type: String,
   },
   timestamp: {
     type: Date,
-  },
-  roomId: {
-    type: String,
   },
 });
 

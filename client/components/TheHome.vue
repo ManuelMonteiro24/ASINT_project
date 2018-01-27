@@ -14,8 +14,8 @@
     <div v-else>
       <h2>Welcome {{ profile.displayName }}</h2>
       <h3 v-if="!profile.admin">{{ profile.username }}</h3>
-      <interface :admin="profile['admin']" v-on:render="fetchData"></interface>
-      <button v-on:click="logout" v-on:render="fetchData">Logout</button><br><br>
+      <interface :admin="profile['admin']" :profile="profile.admin" v-on:render="fetchData" v-on:roomup="reemit"></interface>
+      <button v-on:click="logout" v-on:render="fetchData" class="logout-btn">Logout</button><br><br>
     </div>
 
   </div>
@@ -41,22 +41,33 @@
         }).catch( err => { throw err; }); //TODO handler error
       },
       fetchData: function() {
-        var $data = this.$data
-        $data.loadingData = true
+        var _this = this
+        _this.$data.loadingData = true
 
         fetch('/api/state', { credentials: 'same-origin' }).then(function(resp) {
           if(resp.status !== 401) {
             return resp.json();
+          } else {
+            _this.$emit('roomup', false)
           }
         }).then(function(data) {
-          $data.loadingData = false
+          _this.$data.loadingData = false
           if(data){
-            $data.profile = _.omit(data, 'status')
-            $data.userState = true //authenticated
+            if(data.subscribed) {
+              _this.$data.profile = _.omit(data, 'subscribed')
+              _this.$emit('roomup', data.subscribed)
+            } else {
+              _this.$data.profile = data
+              _this.$emit('roomup', false)
+            }
+            _this.$data.userState = true //authenticated
           } else {
-            $data.userState = false
+            _this.$data.userState = false
           }
         }).catch(err => { throw err; }); //TODO handler error
+      },
+      reemit: function(arg) {
+        this.$emit('roomup', arg)
       },
     },
   }
@@ -66,7 +77,8 @@
   button {
     margin-top: 10px;
   }
-  .scrollable {
-    overflow-y: scroll;
+  .logout-btn {
+    position:relative;
+    margin-top: 30px;
   }
 </style>

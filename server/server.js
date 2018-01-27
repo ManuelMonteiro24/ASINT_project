@@ -1,4 +1,5 @@
 const Express = require('express');
+const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const mongoose = require('mongoose');
 const Path = require('path');
@@ -10,6 +11,7 @@ const dbconnect = require('./modules/dbconnect');
 const App = Express();
 
 //Initialize App
+App.use(bodyParser.json())
 App.use(cookieParser(config.auth.cookieSign))
 App.use('/scripts', Express.static('scripts'));
 App.use(router);
@@ -19,7 +21,7 @@ var listener = App.listen(config.local, err => {
 
   var url = 'mongodb://'.concat(config.database.host + ':' + config.database.port) + '/local';
   mongoose.connect(url); //send connection request to DB
-  
+
   mongoose.connection.on('error', console.error.bind(console, 'mongo connection error:'))
   mongoose.connection.once('open', function() {
     dbconnect.defaultAdmin();

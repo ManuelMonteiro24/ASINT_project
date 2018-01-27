@@ -1,5 +1,5 @@
 <template>
-  <div class="css-main-font">
+  <div class="css-main-font css-login">
       <h1>Login Page</h1>
       <button v-on:click="loginAdmin">Login as Admin</button>
       <button v-on:click="loginUser">Login as Regular User</button>
@@ -16,7 +16,7 @@
     },
     methods: {
       loginAdmin: function() {
-        this.$router.push({name: 'adminlogin'});
+        this.$router.push({ name: 'adminlogin' });
       },
       loginUser: function() {
         this.$router.push({ name: 'redirect', params: { redirectLink: this.userLoginRedirectLink } });
@@ -24,3 +24,13 @@
     }
   }
 </script>
+
+<style scoped>
+  .css-login {
+    text-align: center;
+  }
+  button {
+    position: relative;
+    float: top;
+  }
+</style>

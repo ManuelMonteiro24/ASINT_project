@@ -105,8 +105,21 @@ Handlers.clientStatus = function(req, res) {
   if(res.locals.admin) { //If it's admin
     res.send({ displayName: 'System Administrator', admin: true })
   } else { //If it's user
+
+    var processUserInfo = function(personal) {
+      return dbconnect.isCheckedIn({ username: personal.username, displayName: personal.displayName }).then(function(doc) {
+        if(doc) {
+          personal = _.extend(personal, { subscribed: doc })
+        }
+        res.send(personal)
+      }).catch( error => {
+        console.log(error)
+        res.send({error})
+      })
+    }
+
     return fenix.getPersonalInfo(req.signedCookies['fwa-authorization'].atk).then(function(data){
-      res.send(data);
+      processUserInfo(data)
     }).catch(function(error) { //Log error message
       if(error.response) {
         console.log('\nERROR: ' + error.message + '\nDescription: ' + error.response.data.error_description + '\n')
@@ -131,14 +144,56 @@ Handlers.clientStatus = function(req, res) {
           } else {
             console.log(error)
           }
-          return res.redirect('/login/error') //TODO error page
+          res.redirect('/login/error') //TODO error page
         });
       } else {
         console.log(error)
+        res.redirect('/login/error') //TODO error page
       }
-      res.redirect('/login/error') //TODO error page
     });
   }
+}
+
+Handlers.checkIn = function(req, res) {
+  var cin = function(body) {
+    return dbconnect.checkIn(body).then(function(doc) {
+      console.log('Handler: check in successfuly saved in database')
+      console.log(doc)
+      res.send(doc)
+    }).catch(error => {
+      console.log(error)
+      res.send({error})
+    })
+  }
+  //TODO check if user is already checked in another room and check him out of such room
+  return dbconnect.isCheckedIn({ username: req.body.username, displayName: req.body.displayName }).then(function(room) {
+
+    if(room) { //If user is already checked in another room check him out
+      var check = _.clone(req.body)
+      check.roomId = room._id
+      check.roomName = room.name
+
+      if(dbconnect.checkOut(check)) {
+        console.log('Handler: check out successfuly saved in database')
+      }
+    }
+    console.log(req.body)
+    return cin(req.body)
+
+  }).catch( error => {
+    console.log(error)
+    res.send({error})
+  })
+}
+
+Handlers.checkOut = function(req, res) {
+
+  return dbconnect.checkOut(req.body).then(function(doc) {
+    res.end()
+  }).catch( error => {
+    console.log(error)
+    res.send({error})
+  })
 }
 
 Handlers.checkIOHistory = function(req, res) {
@@ -157,17 +212,26 @@ Handlers.checkIOHistory = function(req, res) {
 }
 
 Handlers.searchRooms = function(req, res) {
+  var parseData = function(data) {
+    var clean = []
+    for(var i = 0; i < data.length; i++){
+      clean.push(_.omit(item, ['']))
+    }
+  }
+
   return dbconnect.searchCache(req.query.search).then(function(hit) {
     if(hit) { //If search it's a cache hit
       console.log('Handler: cache hit for query ', req.query.search)
       return res.send(hit.value)
     } else {
       return fenix.searchRooms(req.query.search).then(function(data) {
+        //ata = parseData(data);
         dbconnect.cacheResults(req.query.search, data).then(function(success) {
           if(success){ console.log('Handler: room search results stored in cache') }
         }).catch(function(err) {
           console.log('Handlers: failed to cache results\n', err)
         })
+        console.log(data)
         res.send(data);
 
       }).catch(function(error) { //Log error message

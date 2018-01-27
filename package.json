@@ -22,6 +22,7 @@
     "@babel/preset-env": "^7.0.0-beta.34",
     "axios": "^0.17.1",
     "babel-loader": "^8.0.0-beta.0",
+    "body-parser": "^1.18.2",
     "cookie-parser": "^1.4.3",
     "css-loader": "^0.28.7",
     "express": "^4.16.2",
