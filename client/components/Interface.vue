@@ -7,7 +7,7 @@
     <input v-if="showCheckIOHist" type="button" v-on:click="showHistory" value="Refresh">
     <ul v-if="showCheckIOHist">
       <li v-for="item in checkIOHist">
-        <p>{{ checkIO(item) }}: {{ item.username }}  &nbsp&nbsp Room: {{ item.roomID }}</p>
+        <p>{{ checkIO(item) }}: {{ item.username }}  has checked out from {{ item.roomName }} at {{ date(item) }}</p>
       </li>
     </ul>
   </div>
@@ -22,7 +22,7 @@
     <h3 v-if="loadingSearch">Loading Search Results...</h3>
     <div v-if="!loadingSearch && !noResults">
       <ul>
-        <li v-for="room in displayRooms"><room v-bind:profile="profile" v-bind:info="room" v-on:roomup="reemit"></room></li>
+        <li v-for="room in displayRooms"><room v-bind:info="room" v-bind:rid="checkedInRoom" v-on:roomup="reemit"></room></li>
       </ul>
       <button v-if="(rooms.length > 5) && resPage > 0" v-on:click="resPage--" class="prev-btn"><<<</button>
       <button v-if="(rooms.length > 5) && (resPage < parseInt(this.$data.rooms.length/5))" v-on:click="resPage++" class="next-btn">>>></button>
@@ -36,10 +36,16 @@
   var _ = require('underscore')
   export default {
 
-    props: ['admin', 'profile'],
+    props: ['admin', 'subscription'],
 
     data() {
-      return { showCheckIOHist: false, checkIOHist: [], search: '', loadingSearch: false, noResults: false, resPage: 0, rooms: [], displayRooms: [], check: []};
+      return { showCheckIOHist: false, checkIOHist: [], search: '', loadingSearch: false, noResults: false, resPage: 0, rooms: [], displayRooms: [], checkedInRoom: 0 };
+    },
+
+    created() {
+      if(this.$parent.$parent.hasRoomInfo) {
+        this.checkedInRoom = this.subscription
+      }
     },
 
     methods: {
@@ -66,6 +72,9 @@
       checkIO: function(item) {
         var text = item.io? 'Check-In': 'Check-Out'
         return text;
+      },
+      date: function(item) {
+        return (new Date(item.timestamp)).toUTCString()
       },
       showRoom: function() {
         var _this = this
@@ -98,8 +107,9 @@
         this.$data.rooms = []
         this.$data.displayRooms = []
       },
-      reemit: function(arg) {
+      reemit: function(id, arg) {
         this.$emit('roomup', arg)
+        this.checkedInRoom = id
       }
     },
 

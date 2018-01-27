@@ -14,7 +14,7 @@
     <div v-else>
       <h2>Welcome {{ profile.displayName }}</h2>
       <h3 v-if="!profile.admin">{{ profile.username }}</h3>
-      <interface :admin="profile['admin']" :profile="profile.admin" v-on:render="fetchData" v-on:roomup="reemit"></interface>
+      <interface :admin="profile['admin']" :subscription="profile['subid']" v-on:render="fetchData" v-on:roomup="reemit"></interface>
       <button v-on:click="logout" v-on:render="fetchData" class="logout-btn">Logout</button><br><br>
     </div>
 
@@ -55,6 +55,7 @@
           if(data){
             if(data.subscribed) {
               _this.$data.profile = _.omit(data, 'subscribed')
+              _this.$data.profile.subid = data.subscribed._id
               _this.$emit('roomup', data.subscribed)
             } else {
               _this.$data.profile = data

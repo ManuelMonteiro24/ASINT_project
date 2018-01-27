@@ -12,15 +12,21 @@
 <script>
   export default {
 
-    props: ['info'],
+    props: ['info', 'rid'],
 
     data() {
-      return { checkedIn: false }
+      return { }
+    },
+
+    computed: {
+      checkedIn: function() {
+        return this.info.id === this.rid
+      },
     },
 
     created() {
       if(this.info.description === this.$parent.$parent.$parent.displayRoom.name){
-        this.checkedIn = true;
+
       }
     },
 
@@ -43,11 +49,10 @@
         var _this = this
         return fetch('/api/checkio/in', options).then(function(resp) {
           if(resp.ok) {
-            _this.checkedIn = true;
             return resp.json()
           }
         }).then(function(room) {
-          _this.$emit('roomup', room)
+          _this.$emit('roomup', room._id, room)
         }).catch( error => { throw error; })
 
       },
@@ -56,6 +61,7 @@
           this.checkedIn = false;
         }
       },
+
     },
   }
 </script>

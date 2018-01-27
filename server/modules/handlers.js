@@ -165,7 +165,6 @@ Handlers.checkIn = function(req, res) {
   var cin = function(body) {
     return dbconnect.checkIn(body).then(function(doc) {
       console.log('Handler: check in successfuly saved in database')
-      console.log(doc)
       res.send(doc)
     }).catch(error => {
       console.log(error)
@@ -184,7 +183,6 @@ Handlers.checkIn = function(req, res) {
         console.log('Handler: check out successfuly saved in database')
       }
     }
-    console.log(req.body)
     return cin(req.body)
 
   }).catch( error => {
@@ -194,7 +192,6 @@ Handlers.checkIn = function(req, res) {
 }
 
 Handlers.checkOut = function(req, res) {
-
   return dbconnect.checkOut(req.body).then(function(doc) {
     res.end()
   }).catch( error => {
@@ -251,6 +248,52 @@ Handlers.searchRooms = function(req, res) {
       });
     }
   })
+}
+
+//Return currently checked in users
+Handlers.checkedInUsers = function(req, res) {
+  if(res.locals.admin) {
+    return dbconnect.getCheckedInUsers().then(function(info) {
+      res.send(info)
+    }).catch( error => {
+      res.redirect('/login/error')
+    })
+  } else {
+    res.status(401).end()
+  }
+}
+
+//Return messages for specific room
+Handlers.getRoomMessages = function(req, res) {
+  if(!res.locals.admin) { //Only a regular user can access this endpoint
+    return dbconnect.isCheckedIn(req.body).then(function(room) {
+      if(room) {
+        if(req.params.id === room._id) {
+          return res.send(room.messsages)
+        }
+      }
+      res.redirect('/login/error')
+    })
+  } else {
+    res.status(401).end()
+  }
+}
+
+//Send new message to specified room in database
+Handlers.putRoomMessage = function(req, res) {
+  if(res.locals.admin) { //Only admin can access this endpoint
+    return dbconnect.writeMessage(req.body.roomId, req.body.msg).then(function(success) {
+      if(success){
+        return res.send().end()
+      }
+      res.redirect('/login/error')
+    }).catch( error => {
+      console.log(error)
+      res.redirect('/login/error')
+    });
+  } else {
+    res.status(401).end()
+  }
 }
 
 //export 'Handlers' module

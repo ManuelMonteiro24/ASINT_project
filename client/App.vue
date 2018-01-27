@@ -3,7 +3,7 @@
     <div class="header css-main-font">
       <p v-bind:class="{ 'css-info-header': hasRoomInfo }">Fénix WebApp</p>
       <div v-if="hasRoomInfo" class="css-room-info">
-        <p>Currently checked in at {{ displayRoom.name }} &nbsp&nbsp</p>
+        <p>Currently checked in at <b>{{ displayRoom.name }}</b> &nbsp&nbsp</p>
         <p v-for="user in displayRoom.checkedInUsers">&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbspLogged in users: <span>{{ user.displayName }}</span></p>
         <p>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbspLast Message: {{ lastMessage }}</p>
       </div>
@@ -26,7 +26,7 @@
         this.displayRoom = currentRoom
         if(currentRoom){
           this.hasRoomInfo = true
-          if(!currentRoom.messages.length){
+          if(currentRoom.messages && !currentRoom.messages.length){
             this.lastMessage = 'No messages for this room...'
           } else {
             this.lastMessage = currentRoom.messages[currentRoom.messages.length-1].text;
@@ -60,9 +60,8 @@
     background-color: #c3d1d5;
   }
   .header p {
-    font-size: 1.75em;
+    font-size: 1.5em;
     text-align: center;
-    font-weight: bold;
   }
   .container {
     position: absolute;
@@ -76,7 +75,7 @@
     overflow-y: scroll;
   }
   .css-main-font {
-    font-family: monospace;
+    font-family: 'Open Sans', 'sans-serif';
   }
   .css-info-header {
     position: relative;
@@ -94,7 +93,7 @@
     float: left;
     margin-top: 0.5%;
     margin-left: 10%;
-    font-size: 0.6em;
+    font-size: 0.55em;
     overflow-x: hidden;
   }
   .css-room-info p {

@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const Path = require('path');
 
 const config = require('./modules/config').server;
-const router = require('./modules/router');
+const Router = require('./modules/router');
 const dbconnect = require('./modules/dbconnect');
 
 const App = Express();
@@ -14,7 +14,8 @@ const App = Express();
 App.use(bodyParser.json())
 App.use(cookieParser(config.auth.cookieSign))
 App.use('/scripts', Express.static('scripts'));
-App.use(router);
+App.use(Router.router);
+App.use('/api', Router.apiRouter);
 
 var listener = App.listen(config.local, err => {
   if(err) { throw err; }

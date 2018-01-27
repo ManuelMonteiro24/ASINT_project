@@ -182,8 +182,32 @@ Connectors.searchCache = function(query) {
 
 }
 
-Connectors.getUserSubscriptions = function(user) {
-  var query = Room.find({ checkedInUsers: { username: user.username, displayName: user.displayName }}).findOne() //User can only be subscribed to one room at a time
+Connectors.getCheckedInUsers = function() {
+  return Room.find({}).then(function(docs) {
+    var info
+    for(var i = 0; i < docs.length; i++) {
+      var item = {
+        room: docs[i].name,
+        users: [],
+      }
+      for(var a = 0; a < docs.checkInUsers.length; a++) {
+        item.users.push(docs[i].checkInUsers[a])
+      }
+      info.push(item)
+    }
+    return info;
+  })
+}
+
+Connectors.writeMessage = function(roomId, msg) {
+  var query = Room.findById(roomId).then(function(room) {
+    if(room) {
+      room.messages.push({ text: msg, timestamp: new Date() });
+      room.save()
+      return true;
+    }
+    return false;
+  })
 }
 
 module.exports = Connectors;
