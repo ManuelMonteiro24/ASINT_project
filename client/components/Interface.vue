@@ -159,7 +159,6 @@
             end = this.userState.rooms.length
           }
         }
-        console.log('asdsad')
         this.$data.userState.displayRooms = this.$data.userState.rooms.slice(begin, end)
       },
     }
