@@ -254,9 +254,9 @@ Handlers.searchRooms = function(req, res) {
 Handlers.checkedInUsers = function(req, res) {
   if(res.locals.admin) {
     return dbconnect.getCheckedInUsers().then(function(info) {
-      res.send(info)
+      res.send({info})
     }).catch( error => {
-      res.redirect('/login/error')
+      res.send(error)
     })
   } else {
     res.status(401).end()
@@ -286,10 +286,9 @@ Handlers.putRoomMessage = function(req, res) {
       if(success){
         return res.send().end()
       }
-      res.redirect('/login/error')
     }).catch( error => {
       console.log(error)
-      res.redirect('/login/error')
+      res.send(error)
     });
   } else {
     res.status(401).end()

@@ -184,14 +184,15 @@ Connectors.searchCache = function(query) {
 
 Connectors.getCheckedInUsers = function() {
   return Room.find({}).then(function(docs) {
-    var info
+    var info = []
     for(var i = 0; i < docs.length; i++) {
       var item = {
-        room: docs[i].name,
+        roomName: docs[i].name,
+        roomId : docs[i]._id,
         users: [],
       }
-      for(var a = 0; a < docs.checkInUsers.length; a++) {
-        item.users.push(docs[i].checkInUsers[a])
+      for(var a = 0; a < docs[i].checkedInUsers.length; a++) {
+        item.users.push(docs[i].checkedInUsers[a])
       }
       info.push(item)
     }
@@ -200,7 +201,7 @@ Connectors.getCheckedInUsers = function() {
 }
 
 Connectors.writeMessage = function(roomId, msg) {
-  var query = Room.findById(roomId).then(function(room) {
+  return Room.findById(roomId).then(function(room) {
     if(room) {
       room.messages.push({ text: msg, timestamp: new Date() });
       room.save()

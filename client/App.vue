@@ -84,7 +84,7 @@
     margin-top: 0.75%;
     margin-left: 2%;
     text-align: center;
-    width: 10%;
+    width: 20%;
     font-weight: bold;
   }
   .css-room-info {

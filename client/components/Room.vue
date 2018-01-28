@@ -23,13 +23,6 @@
         return this.info.id === this.rid
       },
     },
-
-    created() {
-      if(this.info.description === this.$parent.$parent.$parent.displayRoom.name){
-
-      }
-    },
-
     methods: {
       checkIn: function() {
         var bodyJ = {
