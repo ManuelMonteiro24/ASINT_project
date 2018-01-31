@@ -14,8 +14,8 @@
     <div v-else>
       <h2>Welcome {{ profile.displayName }}</h2>
       <h3 v-if="!profile.admin">{{ profile.username }}</h3>
-      <interface :admin="profile['admin']" :subscription="profile['subid']" v-on:render="fetchData" v-on:roomup="reemit"></interface>
-      <button v-on:click="logout" v-on:render="fetchData" class="logout-btn">Logout</button><br><br>
+      <interface :admin="profile['admin']" :subscription="profile['subid']" v-on:msgup="reemitMsgUp" v-on:logout="logout" v-on:roomup="reemitRoomUp"></interface>
+      <button v-on:click="logout" v-on:logout="logout" class="logout-btn">Logout</button><br><br>
     </div>
 
   </div>
@@ -67,9 +67,12 @@
           }
         }).catch(err => { throw err; }); //TODO handler error
       },
-      reemit: function(arg) {
+      reemitRoomUp: function(arg) {
         this.$emit('roomup', arg)
       },
+      reemitMsgUp: function(arg) {
+        this.$emit('msgup', arg)
+      }
     },
   }
 </script>

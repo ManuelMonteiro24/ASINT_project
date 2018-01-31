@@ -39,6 +39,15 @@
           body: JSON.stringify(bodyJ),
         }
 
+        if(this.checkedIn) {
+          var _this = this
+          return fetch('/api/checkio/out', options).then(function(resp) {
+            if(resp.ok) {
+              _this.$emit('roomup', 0, undefined)
+            }
+          }).catch( error => { throw error; })
+        }
+
         var _this = this
         return fetch('/api/checkio/in', options).then(function(resp) {
           if(resp.ok) {

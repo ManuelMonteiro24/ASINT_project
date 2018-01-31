@@ -39,17 +39,18 @@
         }
 
         var _this = this
-        return fetch('api/rooms/'+ this.room.roomId +'/messages', options).then(function(resp) {
+        return fetch('/api/rooms/'+ this.room.roomId +'/messages', options).then(function(resp) {
           if(resp.ok) {
             _this.messageReturn.success = true
+          } else if(resp.status === 401){
+            _this.$emit('logout')
           } else {
             _this.messageReturn.error = true
           }
         }).catch( error => {
-          console.log(error)
           _this.messageReturn.error = true
         }).finally(function() {
-          setTimeout(this.resetMessages, 5000);
+          setTimeout(_this.resetMessages, 3000);
         })
 
       }

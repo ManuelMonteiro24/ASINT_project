@@ -1,19 +1,18 @@
-<template class="css-main-font">
+a<template class="css-main-font">
 
   <div v-if="admin === true" class="css-main-font">
     <!--Admin Interface-->
-    <input v-model="adminState.showCheckIOHist" v-on:click="showHistory" type="checkbox">
+    <input v-model="adminState.showCheckIOHist" type="checkbox">
     <label>Show check in/out history</label>
-    <input v-if="adminState.showCheckIOHist" type="button" v-on:click="showHistory" value="Refresh">
     <ul v-if="adminState.showCheckIOHist">
       <li v-for="item in adminState.checkIOHist">
-        <p>{{ checkIO(item) }}: {{ item.username }} {{ item.roomName }} at {{ date(item) }}</p>
+        <p><b>{{ checkIO(item) }}:&nbsp</b> {{ item.username }}, {{ item.roomName }} at {{ date(item) }}</p>
       </li>
     </ul>
-    <p><label>Currently check in users</label></p>
+    <p><label>Currently checked in users:</label></p>
     <ul>
       <li v-for="room in adminState.checkedInUsers">
-        <users v-bind:room="room"></users>
+        <users v-on:logout="reemitLogout" v-bind:room="room"></users>
       </li>
     </ul>
   </div>
@@ -28,7 +27,7 @@
     <h3 v-if="userState.loadingSearch">Loading Search Results...</h3>
     <div v-if="!userState.loadingSearch && !userState.noResults">
       <ul>
-        <li v-for="ritem in userState.displayRooms"><room v-bind:info="ritem" v-bind:rid="userState.checkedInRoom" v-on:roomup="reemit"></room></li>
+        <li v-for="ritem in userState.displayRooms"><room v-bind:info="ritem" v-bind:rid="userState.checkedInRoom" v-on:roomup="reemitRoomUp"></room></li>
       </ul>
       <button v-if="(userState.rooms.length > 5) && userState.resPage > 0" v-on:click="userState.resPage--" class="prev-btn"><<<</button>
       <button v-if="(userState.rooms.length > 5) && (userState.resPage < parseInt(userState.rooms.length/5))" v-on:click="userState.resPage++" class="next-btn">>>></button>
@@ -46,32 +45,36 @@
 
     data() {
       var adminState = { showCheckIOHist: false, checkIOHist: [], checkedInUsers: [] }
-      var userState = { search: '', loadingSearch: false, noResults: false, resPage: 0, rooms: [], displayRooms: [], checkedInRoom: 0 }
-      return { adminState, userState, };
+      var userState = { search: '', loadingSearch: false, noResults: false, resPage: 0, rooms: [], displayRooms: [], checkedInRoom: 0, interval:{} }
+      return { adminState, userState, sint: undefined };
     },
 
     created() {
-      if(this.$parent.$parent.hasRoomInfo) {
-        this.userState.checkedInRoom = this.subscription
-      }
-
       if(this.admin){
-        this.fetchCheckInUsers()
-        setInterval(this.fetchCheckInUsers, 5000);
+        this.fetchCheckedInUsers()
+        this.sint = setInterval(this.fetchCheckedInUsers, 5000);
+      } else {
+        if(this.$parent.$parent.hasRoomInfo) {
+          this.userState.checkedInRoom = this.subscription
+          this.sint = setInterval(this.updateMessages, 5000);
+        }
       }
 
     },
 
+   destroyed() {
+     clearInterval(this.sint)
+     clearInterval(this.userState.interval)
+   },
+
     methods: {
       showHistory: function() {
-        if(this.adminState.showCheckIOHist) { return }
-
         var _this = this
         return this.fetchHistory().then(function(data) {
           if(typeof data !== 'number') {
             _this.$data.adminState.checkIOHist = data;
           } else if (data === 401){
-            _this.$emit('render')
+            _this.$emit('logout')
           }
         })
       },
@@ -100,7 +103,8 @@
             _this.userState.loadingSearch = false
             _this.userState.noResults = !data.length? true:false
           } else if (data === 401){
-            _this.$emit('render')
+            console.log('logouttt')
+            _this.$emit('logout')
           }
         })
       },
@@ -117,7 +121,7 @@
           return resp.status;
         }).catch(err => { throw err; })
       },
-      fetchCheckInUsers: function() {
+      fetchCheckedInUsers: function() {
         var _this = this;
         return fetch('/api/rooms/users', { credentials: 'same-origin' }).then(function(resp) {
           if(resp.ok) {
@@ -130,7 +134,7 @@
               _this.adminState.checkedInUsers = body.info
             }
           } else if (body === 401){
-            _this.$emit('render')
+            _this.$emit('logout')
           }
 
         }).catch(err => { console.log(err)});
@@ -139,9 +143,41 @@
         this.$data.userState.rooms = []
         this.$data.userState.displayRooms = []
       },
-      reemit: function(id, arg) {
+      updateMessages: function() {
+        var options = {
+            method: 'POST',
+            headers: new Headers({'Content-Type': 'application/json'}),
+            credentials: 'same-origin',
+            body: JSON.stringify({
+              username: this.$parent.profile.username,
+              displayName: this.$parent.profile.displayName,
+            }),
+        }
+
+        var _this = this
+        return fetch('/api/rooms/'+ this.userState.checkedInRoom +'/messages', options ).then(function(resp) {
+          if(resp.ok) {
+            return resp.json()
+          }
+          return resp.status
+        }).then(function(body){
+          if(typeof body !== 'number') {
+            if(body.messages.length !== 0){
+              _this.$emit('msgup', body.messages)
+            }
+          } else if (body === 401){
+            console.log('logouttt')
+            _this.$emit('logout')
+          }
+
+        }).catch(err => { console.log(err)});
+      },
+      reemitRoomUp: function(id, arg) {
         this.$emit('roomup', arg)
         this.userState.checkedInRoom = id
+      },
+      reemitLogout: function() {
+        this.$emit('logout')
       }
     },
 
@@ -160,6 +196,18 @@
           }
         }
         this.$data.userState.displayRooms = this.$data.userState.rooms.slice(begin, end)
+      },
+      'userState.loadingSearch': function(nw, old) {
+        this.userState.resPage = 0;
+      },
+      'adminState.showCheckIOHist': function(nw, old) {
+        if(nw) {
+          this.showHistory();
+          this.userState.interval = setInterval(this.showHistory, 5000)
+        } else {
+          clearInterval(this.userState.interval)
+          this.userState.interval = undefined;
+        }
       },
     }
   }

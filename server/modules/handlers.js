@@ -229,13 +229,13 @@ Handlers.searchRooms = function(req, res) {
       return res.send(hit.value)
     } else {
       return fenix.searchRooms(req.query.search).then(function(data) {
-        //ata = parseData(data);
-        dbconnect.cacheResults(req.query.search, data).then(function(success) {
-          if(success){ console.log('Handler: room search results stored in cache') }
-        }).catch(function(err) {
-          console.log('Handlers: failed to cache results\n', err)
-        })
-        console.log(data)
+        if(data.length !== 0){
+          dbconnect.cacheResults(req.query.search, data).then(function(success) {
+            if(success){ console.log('Handler: room search results stored in cache') }
+          }).catch(function(err) {
+            console.log('Handlers: failed to cache results\n', err)
+          })
+        }
         res.send(data);
 
       }).catch(function(error) { //Log error message
@@ -256,7 +256,7 @@ Handlers.checkedInUsers = function(req, res) {
     return dbconnect.getCheckedInUsers().then(function(info) {
       res.send({info})
     }).catch( error => {
-      res.send(error)
+      res.send({error})
     })
   } else {
     res.status(401).end()
@@ -269,7 +269,7 @@ Handlers.getRoomMessages = function(req, res) {
     return dbconnect.isCheckedIn(req.body).then(function(room) {
       if(room) {
         if(req.params.id === room._id) {
-          return res.send(room.messsages)
+          return res.send({ messages: room.messages})
         }
       }
       res.redirect('/login/error')

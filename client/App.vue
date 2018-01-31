@@ -9,7 +9,7 @@
       </div>
     </div>
     <div class="container">
-      <router-view v-on:roomup="updateRoomInfo"></router-view>
+      <router-view v-on:roomup="updateRoom" v-on:msgup="updateRoomMessages"></router-view>
     </div>
   </div>
 </template>
@@ -22,7 +22,7 @@
     },
 
     methods: {
-      updateRoomInfo: function(currentRoom) {
+      updateRoom: function(currentRoom) {
         this.displayRoom = currentRoom
         if(currentRoom){
           this.hasRoomInfo = true
@@ -34,7 +34,10 @@
         } else {
           this.hasRoomInfo = false
         }
-
+      },
+      updateRoomMessages: function(messages) {
+        this.displayRoom.messages = messages
+        this.lastMessage = messages[messages.length-1].text;
       },
     },
     router,
