@@ -4,12 +4,12 @@
       <p v-bind:class="{ 'css-info-header': hasRoomInfo }">Fénix WebApp</p>
       <div v-if="hasRoomInfo" class="css-room-info">
         <p>Currently checked in at <b>{{ displayRoom.name }}</b> &nbsp&nbsp</p>
-        <p v-for="user in displayRoom.checkedInUsers">&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbspLogged in users: <span>{{ user.displayName }}</span></p>
+        <p >&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbspLogged in users:&nbsp<p  v-for="user in displayRoom.checkedInUsers">{{ user.username }},&nbsp</p>
         <p>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbspLast Message: {{ lastMessage }}</p>
       </div>
     </div>
     <div class="container">
-      <router-view v-on:roomup="updateRoom" v-on:msgup="updateRoomMessages"></router-view>
+      <router-view v-on:roomup="updateRoom" v-on:msgup="updateRoomInfo"></router-view>
     </div>
   </div>
 </template>
@@ -35,9 +35,13 @@
           this.hasRoomInfo = false
         }
       },
-      updateRoomMessages: function(messages) {
-        this.displayRoom.messages = messages
-        this.lastMessage = messages[messages.length-1].text;
+      updateRoomInfo: function(info) {
+        this.displayRoom.messages = info.messages
+        this.displayRoom.checkedInUsers = info.checkedInUsers
+        if(info.messages.length !== 0) {
+          this.lastMessage = info.messages[info.messages.length-1].text;
+        }
+
       },
     },
     router,
@@ -76,6 +80,10 @@
     text-align: center;
     overflow-x: hidden;
     overflow-y: scroll;
+  }
+  .logged-in-users {
+    overflow-x: hidden;
+    max-width: 20em;
   }
   .css-main-font {
     font-family: 'Open Sans', 'sans-serif';

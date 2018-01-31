@@ -4,13 +4,13 @@ a<template class="css-main-font">
     <!--Admin Interface-->
     <input v-model="adminState.showCheckIOHist" type="checkbox">
     <label>Show check in/out history</label>
-    <ul v-if="adminState.showCheckIOHist">
+    <ul v-if="adminState.showCheckIOHist" class="list-scroll">
       <li v-for="item in adminState.checkIOHist">
-        <p><b>{{ checkIO(item) }}:&nbsp</b> {{ item.username }}, {{ item.roomName }} at {{ date(item) }}</p>
+        <p><b>{{ checkIO(item) }}:&nbsp</b> {{ item.username }}, {{ item.roomName }} at <span style="text-decoration:underline">{{ date(item) }}</span></p>
       </li>
     </ul>
-    <p><label>Currently checked in users:</label></p>
-    <ul>
+    <p>Currently checked in users: <span v-if="adminState.checkedInUsers.length === 0">None</span></p>
+    <ul v-if="adminState.checkedInUsers.length !== 0" class="list-scroll">
       <li v-for="room in adminState.checkedInUsers">
         <users v-on:logout="reemitLogout" v-bind:room="room"></users>
       </li>
@@ -103,7 +103,6 @@ a<template class="css-main-font">
             _this.userState.loadingSearch = false
             _this.userState.noResults = !data.length? true:false
           } else if (data === 401){
-            console.log('logouttt')
             _this.$emit('logout')
           }
         })
@@ -132,6 +131,8 @@ a<template class="css-main-font">
           if(typeof body !== 'number') {
             if(body.info.length !== 0){
               _this.adminState.checkedInUsers = body.info
+            } else {
+              _this.adminState.checkedInUsers = []
             }
           } else if (body === 401){
             _this.$emit('logout')
@@ -162,11 +163,10 @@ a<template class="css-main-font">
           return resp.status
         }).then(function(body){
           if(typeof body !== 'number') {
-            if(body.messages.length !== 0){
-              _this.$emit('msgup', body.messages)
+            if(body.messages.length !== 0 || body.checkedInUsers.length !== 0){
+              _this.$emit('msgup', body)
             }
           } else if (body === 401){
-            console.log('logouttt')
             _this.$emit('logout')
           }
 
@@ -175,6 +175,11 @@ a<template class="css-main-font">
       reemitRoomUp: function(id, arg) {
         this.$emit('roomup', arg)
         this.userState.checkedInRoom = id
+        if(id !== 0) {
+          this.sint = setInterval(this.updateMessages, 5000);
+        } else {
+          clearInterval(this.sint)
+        }
       },
       reemitLogout: function() {
         this.$emit('logout')
@@ -232,6 +237,10 @@ a<template class="css-main-font">
     position: relative;
     margin-top: 20px;
     margin-bottom: 20px;
+  }
+  .list-scroll {
+    max-height: 20em;
+    overflow-y: scroll;
   }
   .css-user {
     position: relative;

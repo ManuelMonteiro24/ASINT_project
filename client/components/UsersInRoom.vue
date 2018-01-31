@@ -1,7 +1,8 @@
 <template>
-  <div>
-    <p>{{room.roomName}} <button v-on:click="sendMessage">Send Message</button></p>
+  <div class="main-div">
+    <p><b>{{room.roomName}}</b></p>
     <input type="text" v-model="message">
+    <button v-on:click="sendMessage">Send Message</button>
     <p v-if="messageReturn.success" >Success on sending message!</p>
     <p v-if="messageReturn.error">Error on sending message!</p>
     <p v-for="user in room.users"> {{ user.displayName }} {{ user.username }}</p>
@@ -57,3 +58,10 @@
     }
   }
 </script>
+
+<style>
+  .main-div {
+    padding-bottom: 1em;
+    padding-top: 0.1%;
+  }
+</style>

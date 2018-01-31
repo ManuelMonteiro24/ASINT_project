@@ -77,7 +77,7 @@
   }
 </script>
 
-<style>
+<style scoped>
   button {
     margin-top: 10px;
   }

@@ -95,7 +95,7 @@ Handlers.logout = function(req, res) {
 
 Handlers.loginError = function(req, res) {
   //TODO What to send when error occurs during authentication??
-  return res.send('An error has ocurred!')
+  return res.send({ error: 'An error has ocurred!' })
 }
 
 //Get user status. Check for 'fwa-authorization' state cookie
@@ -269,10 +269,10 @@ Handlers.getRoomMessages = function(req, res) {
     return dbconnect.isCheckedIn(req.body).then(function(room) {
       if(room) {
         if(req.params.id === room._id) {
-          return res.send({ messages: room.messages})
+          return res.send({ messages: room.messages, checkedInUsers: room.checkedInUsers }).end()
         }
       }
-      res.redirect('/login/error')
+      res.send({ messages: [], checkedInUsers: [] })
     })
   } else {
     res.status(401).end()

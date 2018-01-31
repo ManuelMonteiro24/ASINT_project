@@ -78,7 +78,6 @@ Connectors.getCheckIOList = function(count, /*temporal window option?? from, to*
   var query = CheckIO.find().setOptions({ limit: count })
   query.sort('-timestamp')
   return query.exec().then(function(docs) {
-    console.log(docs)
     return docs;
   }).catch( error => {
     console.log(error);
@@ -114,12 +113,8 @@ Connectors.checkOut = function(body) {
     if(doc) {
       var update = new Room(doc)
       //Pop out user from 'checkedInUsers'
-      update.checkedInUsers.pop(update.checkedInUsers.find(function(elem) {
-        if(elem.username === body.username){
-          return elem
-        }
-      }))
-
+      update.checkedInUsers = update.checkedInUsers.filter( elem => { return !(elem.username === body.username) })
+      console.log(body.username)
       if(!update.checkedInUsers.length) { //If there are no more 'checkedInUsers', drop room from database
         update.remove()
       } else {
