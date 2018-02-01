@@ -17,7 +17,7 @@ App.use('/scripts', Express.static('scripts'));
 App.use(Router.router);
 App.use('/api', Router.apiRouter);
 
-var listener = App.listen(process.env.PORT, err => {
+var listener = App.listen(config.local, err => {
   if(err) { throw err; }
 
   var url = 'mongodb://'.concat(config.database.host + ':' + config.database.port) + '/local';
