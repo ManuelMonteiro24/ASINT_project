@@ -2,6 +2,7 @@ module.exports = {
   server: {
     local: {
       host: '35.195.212.225',
+      port: 80,
     },
     database: {
       host: '10.164.0.4',
