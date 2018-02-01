@@ -13,7 +13,7 @@ module.exports = {
     },
   },
   fenix: {
-    redirectUri: 'http://localhost:3000/login/user/',
+    redirectUri: 'http://35.195.212.225/login/user/',
     accessTokenApi: 'https://fenix.tecnico.ulisboa.pt/oauth/access_token',
     refreshTokenApi: 'https://fenix.tecnico.ulisboa.pt/oauth/refresh_token',
     personalInfoApi: 'https://fenix.tecnico.ulisboa.pt/api/fenix/v1/person',
