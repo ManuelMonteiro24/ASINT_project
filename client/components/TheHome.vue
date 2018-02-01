@@ -43,8 +43,9 @@
       fetchData: function() {
         var _this = this
         _this.$data.loadingData = true
-
+          console.log("ola antes");
         fetch('/api/state', { credentials: 'same-origin' }).then(function(resp) {
+          console.log("ola");
           if(resp.status !== 401) {
             return resp.json();
           } else {
