@@ -21,4 +21,5 @@ module.exports = {
     clientId: '1132965128044593',
     clientSecret: 'w+DRFx/9w7LexcwcZSZK7sCfcioy2bkHilr3ayz5imPZD6ClA2kSBx9OnmuTcq8DBgDfatDEBLvApM3Mhaj1sg==',
   },
+  cacheSize: 2,
 }

@@ -6,8 +6,24 @@ const CheckIO = require('../../models/checkio');
 const Cache = require('../../models/cache');
 const Room = require('../../models/room');
 
+const CACHE_SIZE = require('./config').cacheSize
+
 //Module for handling database querys, connections and interactions
 const Connectors = {}
+
+
+var cacheCleanUp = function() {
+  var query = Cache.find({}).count()
+  query.exec().then( cached => {
+    if(cached > CACHE_SIZE) {
+      var rmQ = Cache.find({}).sort('lastAccess').findOne() //sort by lastAccess descending order
+      rmQ.exec().then( function(doc) {
+        var last = new Cache(doc)
+        last.remove()
+      }).catch( error => { console.log(error) })
+    }
+  })
+}
 
 //Create default admin user {username: 'admin', password: 123}
 Connectors.defaultAdmin = function() {
@@ -114,7 +130,7 @@ Connectors.checkOut = function(body) {
       var update = new Room(doc)
       //Pop out user from 'checkedInUsers'
       update.checkedInUsers = update.checkedInUsers.filter( elem => { return !(elem.username === body.username) })
-      console.log(body.username)
+
       if(!update.checkedInUsers.length) { //If there are no more 'checkedInUsers', drop room from database
         update.remove()
       } else {
@@ -153,7 +169,10 @@ Connectors.cacheResults = function(query, results) {
     lastAccess: new Date(),
   })
   //Save to database
-  return doc.save()
+  return doc.save().then(doc => {
+    cacheCleanUp()
+    return true
+  })
 }
 
 //TODO cache search needs to be optimized: if cache miss, search for room in 'value'
