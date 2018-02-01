@@ -1,11 +1,10 @@
 module.exports = {
   server: {
     local: {
-      host: 'localhost',
-      port: 3000,
+      host: '35.195.212.225',
     },
     database: {
-      host: 'localhost',
+      host: '10.164.0.4',
       port: 27017,
     },
     auth: {
