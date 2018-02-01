@@ -3,7 +3,7 @@ module.exports = {
   entry: './client/index.js',
   // Where should the compiled file go?
   output: {
-    path: "/home/jasa/Desktop/Code/asint/scripts/",
+    path: "/home/manuel_pcma/ASINT_project/scripts/",
     filename: 'bundle.js'
   },
   resolve: {
