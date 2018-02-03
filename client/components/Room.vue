@@ -23,6 +23,7 @@
         return this.info.id === this.rid
       },
     },
+
     methods: {
       checkIn: function() {
         var bodyJ = {

@@ -1,7 +1,7 @@
 <template>
   <div class="main">
     <div class="header css-main-font">
-      <p v-bind:class="{ 'css-info-header': hasRoomInfo }">Fénix WebApp</p>
+      <p v-bind:class="{ 'css-info-header': hasRoomInfo }"><b>Fénix WebApp</b></p>
       <div v-if="hasRoomInfo" class="css-room-info">
         <p>Currently checked in at <b>{{ displayRoom.name }}</b> &nbsp&nbsp</p>
         <p >&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbspLogged in users:&nbsp<p  v-for="user in displayRoom.checkedInUsers">{{ user.username }},&nbsp</p>
@@ -96,7 +96,6 @@
     margin-left: 2%;
     text-align: center;
     width: 20%;
-    font-weight: bold;
   }
   .css-room-info {
     position: relative;

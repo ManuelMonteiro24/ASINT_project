@@ -11,12 +11,15 @@
 
 <script>
   export default {
+
     props: ['room'],
+
     data() {
       var message = []
       var messageReturn = { error: false, success: false }
       return { messageReturn, message };
     },
+
     created() {
 
     },

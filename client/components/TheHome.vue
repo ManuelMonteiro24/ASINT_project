@@ -26,13 +26,16 @@
   var _ = require('underscore');
 
   export default {
+
     data() {
       return { userState: false, loadingData: false, profile: {} };
     },
+
     created() {
       //fetch user profile information after navigation
       this.fetchData()
     },
+
     methods: {
       logout: function() {
         var _this = this
@@ -43,15 +46,16 @@
       fetchData: function() {
         var _this = this
         _this.$data.loadingData = true
-          console.log("ola antes");
         fetch('/api/state', { credentials: 'same-origin' }).then(function(resp) {
-          console.log("ola");
+
           if(resp.status !== 401) {
             return resp.json();
           } else {
             _this.$emit('roomup', false)
           }
+
         }).then(function(data) {
+
           _this.$data.loadingData = false
           if(data){
             if(data.subscribed) {
@@ -66,6 +70,7 @@
           } else {
             _this.$data.userState = false
           }
+
         }).catch(err => { throw err; }); //TODO handler error
       },
       reemitRoomUp: function(arg) {

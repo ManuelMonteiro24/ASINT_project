@@ -4,7 +4,9 @@
 
 <script>
   export default {
+
     props: ['redirectLink'],
+
     created() {
       window.location = this.redirectLink; //redirect client to @redirectLink
     },

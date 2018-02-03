@@ -207,7 +207,7 @@ a<template class="css-main-font">
       },
       'adminState.showCheckIOHist': function(nw, old) {
         if(nw) {
-          this.showHistory();
+          this.showHistory(); //call function and set interval
           this.userState.interval = setInterval(this.showHistory, 5000)
         } else {
           clearInterval(this.userState.interval)

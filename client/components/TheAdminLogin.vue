@@ -14,9 +14,11 @@
 
 <script>
   export default {
+
     data() {
       return { error: false, redirect: false, login: undefined, pw: undefined }
     },
+
     methods: {
       submit: function() {
         var authHeader = new Headers({ 'Authorization': 'Basic ' + btoa(this.$data.login + ':' + this.$data.pw) }) //base64 encoding of ascii string

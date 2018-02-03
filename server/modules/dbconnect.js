@@ -137,7 +137,6 @@ Connectors.checkOut = function(body) {
         update.save()
       }
 
-
       var doc = new CheckIO(_.extend(body, { io: false }))
       doc.save()
       return true
