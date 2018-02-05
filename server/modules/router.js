@@ -13,7 +13,7 @@ router.get('/login/error', Handlers.loginError); //esta route nao devia ficar pr
 router.get('/logout', Handlers.logout);
 
 //API routes
-apiRouter.use(Handlers.endpointAuthentication)
+apiRouter.use(Handlers.endpointAuthentication) //authentication middleware for /api routes
 
 apiRouter.get('/state', Handlers.clientStatus);
 apiRouter.get('/checkio/history', Handlers.checkIOHistory);

@@ -4,6 +4,18 @@
       <p class="p1">Space: {{ info.description }} --> <span v-if="info.parentSpace.type==='FLOOR'">Floor</span> {{ info.parentSpace.name }}, {{ info.topLevelSpace.name }}</p>
       <p class="p2">ExamCapacity: {{ info.capacity.exam }}&nbsp&nbsp NormalCapacity: {{ info.capacity.normal }}</p>
       <p class="p3">{{ info.events.length }} scheduled events</p>
+      <p v-if="info.events.length !== 0" class="p3">
+        <dropdown :align="'bottom'">
+          <template slot="btn">Show Events</template>
+          <template slot="body">
+            <ul>
+              <li v-for="evt in info.events">
+                <p>{{ evt.type }}, {{ evt.description }}, {{ evt.day }}</p>
+              </li>
+            </ul>
+          </template>
+        </dropdown>
+      </p>
     </div>
     <button v-on:click="checkIn"><span v-if="!checkedIn">Check In</span><span v-else>CheckOut</span></button>
   </div>
@@ -25,6 +37,9 @@
     },
 
     methods: {
+      eveeent: function(eventt) {
+        console.log(eventt)
+      },
       checkIn: function() {
         var bodyJ = {
           roomId: this.info.id,
@@ -70,6 +85,9 @@
 </script>
 
 <style scoped>
+  li {
+    font-size: 1.5em;
+  }
  .prg {
    position: relative;
    width: 60%;

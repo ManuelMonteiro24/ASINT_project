@@ -2,10 +2,10 @@ module.exports = {
   server: {
     local: {
       host: '127.0.0.1',
-      port: 8080,
+      port: 3000,
     },
     database: {
-      host: '10.164.0.4',
+      host: '127.0.0.1',
       port: 27017,
     },
     auth: {
@@ -13,7 +13,7 @@ module.exports = {
     },
   },
   fenix: {
-    redirectUri: 'http://35.195.212.225/login/user/',
+    redirectUri: 'http://localhost:3000/login/user/',
     accessTokenApi: 'https://fenix.tecnico.ulisboa.pt/oauth/access_token',
     refreshTokenApi: 'https://fenix.tecnico.ulisboa.pt/oauth/refresh_token',
     personalInfoApi: 'https://fenix.tecnico.ulisboa.pt/api/fenix/v1/person',
@@ -21,5 +21,5 @@ module.exports = {
     clientId: '1132965128044593',
     clientSecret: 'w+DRFx/9w7LexcwcZSZK7sCfcioy2bkHilr3ayz5imPZD6ClA2kSBx9OnmuTcq8DBgDfatDEBLvApM3Mhaj1sg==',
   },
-  cacheSize: 2,
+  cacheSize: 20,
 }

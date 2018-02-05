@@ -3,7 +3,7 @@ module.exports = {
   entry: './client/index.js',
   // Where should the compiled file go?
   output: {
-    path: "/home/manuel_pcma/ASINT_project/scripts/",
+    path: "/home/jasa/Desktop/Code/asint/scripts/",
     filename: 'bundle.js'
   },
   resolve: {
@@ -20,24 +20,19 @@ module.exports = {
         // Transform it with babel
         loader: 'babel-loader',
         // don't transform node_modules folder (which don't need to be compiled)
-        //exclude: /node_modules/
+        exclude: /node_modules/
       },
 
       {
         // Ask webpack to check: If this file ends with .vue, then apply some transforms
         test: /\.vue$/,
         // don't transform node_modules folder (which don't need to be compiled)
-        exclude: /(node_modules|bower_components)/,
+        //exclude: /node_modules/,
         // Transform it with vue
         use: {
           loader: 'vue-loader'
         }
       },
-
-      {
-        test: /\.css$/,
-        loader: 'css-loader',
-      }
     ]
   },
 }

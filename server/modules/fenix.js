@@ -73,7 +73,7 @@ Fenix.searchRooms = function(search) {
 
         for(var i = 0; i < _data.length; i++) {
           if(_data[i].type !== 'ROOM' || (_data[i].type === 'ROOM' && _data[i].name.includes(search))) {
-            promises.push(recursiveQuery(_data[i].id))
+            promises.push(recursiveQuery(_data[i].id)) //recursive call
           }
         }
       }

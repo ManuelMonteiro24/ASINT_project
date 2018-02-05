@@ -2,17 +2,17 @@ a<template class="css-main-font">
 
   <div v-if="admin === true" class="css-main-font">
     <!--Admin Interface-->
+    <p>Currently checked in users: <span v-if="adminState.checkedInUsers.length === 0">None</span></p>
+    <ul v-if="adminState.checkedInUsers.length !== 0" class="list-scroll">
+      <li v-for="room in adminState.checkedInUsers">
+        <users v-on:logout="reemitLogout" v-bind:room="room"></users>
+      </li>
+    </ul>
     <input v-model="adminState.showCheckIOHist" type="checkbox">
     <label>Show check in/out history</label>
     <ul v-if="adminState.showCheckIOHist" class="list-scroll">
       <li v-for="item in adminState.checkIOHist">
         <p><b>{{ checkIO(item) }}:&nbsp</b> {{ item.username }}, {{ item.roomName }} at <span style="text-decoration:underline">{{ date(item) }}</span></p>
-      </li>
-    </ul>
-    <p>Currently checked in users: <span v-if="adminState.checkedInUsers.length === 0">None</span></p>
-    <ul v-if="adminState.checkedInUsers.length !== 0" class="list-scroll">
-      <li v-for="room in adminState.checkedInUsers">
-        <users v-on:logout="reemitLogout" v-bind:room="room"></users>
       </li>
     </ul>
   </div>
@@ -22,7 +22,7 @@ a<template class="css-main-font">
     <p>Search for a room within Instituto Superior Técnico</p>
     <form v-on:submit.prevent="showRoom">
       <input v-model="userState.search" type="text">
-      <input v-on:click="clearSearch" v-if="!userState.loadingSearch && !userState.noResults" type="button" value="Clear Search">
+      <input v-on:click="clearSearch" v-if="!userState.loadingSearch && !userState.noResults && this.$data.userState.displayRooms.length !== 0" type="button" value="Clear Search">
     </form>
     <h3 v-if="userState.loadingSearch">Loading Search Results...</h3>
     <div v-if="!userState.loadingSearch && !userState.noResults">
@@ -30,7 +30,7 @@ a<template class="css-main-font">
         <li v-for="ritem in userState.displayRooms"><room v-bind:info="ritem" v-bind:rid="userState.checkedInRoom" v-on:roomup="reemitRoomUp"></room></li>
       </ul>
       <button v-if="(userState.rooms.length > 5) && userState.resPage > 0" v-on:click="userState.resPage--" class="prev-btn"><<<</button>
-      <button v-if="(userState.rooms.length > 5) && (userState.resPage < parseInt(userState.rooms.length/5))" v-on:click="userState.resPage++" class="next-btn">>>></button>
+      <button v-if="(userState.rooms.length > 5) && (userState.resPage < userState.rooms.length/5 - 1 )" v-on:click="userState.resPage++" class="next-btn">>>></button>
     </div>
     <h3 v-else-if="!userState.loadingSearch">No Results Found :/</h3>
   </div>
@@ -110,7 +110,7 @@ a<template class="css-main-font">
       fetchRoom: function() {
         //TODO search params
         var params = { search: this.userState.search }
-        var url = new URL('http://35.195.212.225/api/rooms/find')
+        var url = new URL('http://localhost:3000/api/rooms/find')
         Object.keys(params).forEach(key => url.searchParams.append(key, params[key]))
 
         return fetch(url, { credentials: 'same-origin' }).then(function(resp) {
@@ -224,7 +224,6 @@ a<template class="css-main-font">
     position: relative;
     padding-left: 20%;
     padding-right: 20%;
-
   }
   li {
     position: relative;
@@ -232,6 +231,7 @@ a<template class="css-main-font">
     margin-bottom: 10px;
     padding-left: 10%;
     border-radius: 5px;
+    font-size: 2em;
   }
   form {
     position: relative;
