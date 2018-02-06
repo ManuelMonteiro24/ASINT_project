@@ -12,7 +12,6 @@ const routes = [
   { name: 'login', path: '/login', component: Login },
   { name: 'adminlogin', path: '/login/admin', component: AdminLogin },
   { name: 'redirect', path: '/redirect/:redirectLink', component: Redirect, props: true },
-  //{ name: 'logout', path: '/logout', component: Logout},
 ]
 
 const router = new VueRouter({

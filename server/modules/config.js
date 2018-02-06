@@ -2,10 +2,10 @@ module.exports = {
   server: {
     local: {
       host: '127.0.0.1',
-      port: 3000,
+      port: 8080,
     },
     database: {
-      host: '127.0.0.1',
+      host: '10.164.0.4',
       port: 27017,
     },
     auth: {
@@ -13,7 +13,7 @@ module.exports = {
     },
   },
   fenix: {
-    redirectUri: 'http://localhost:3000/login/user/',
+    redirectUri: 'http://130.211.79.4/login/user/',
     accessTokenApi: 'https://fenix.tecnico.ulisboa.pt/oauth/access_token',
     refreshTokenApi: 'https://fenix.tecnico.ulisboa.pt/oauth/refresh_token',
     personalInfoApi: 'https://fenix.tecnico.ulisboa.pt/api/fenix/v1/person',

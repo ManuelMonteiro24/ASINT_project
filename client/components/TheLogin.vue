@@ -12,7 +12,7 @@
 
     data: function() {
       return {
-        userLoginRedirectLink: "https://fenix.tecnico.ulisboa.pt/oauth/userdialog?client_id=1132965128044593&redirect_uri=http://localhost:3000/login/user/",
+        userLoginRedirectLink: "https://fenix.tecnico.ulisboa.pt/oauth/userdialog?client_id=1132965128044593&redirect_uri=http://130.211.79.4/login/user/",
       };
     },
 
