@@ -110,7 +110,7 @@ a<template class="css-main-font">
       fetchRoom: function() {
         //TODO search params
         var params = { search: this.userState.search }
-        var url = new URL('http://localhost:3000/api/rooms/find')
+        var url = new URL('http://130.211.79.4/api/rooms/find')
         Object.keys(params).forEach(key => url.searchParams.append(key, params[key]))
 
         return fetch(url, { credentials: 'same-origin' }).then(function(resp) {

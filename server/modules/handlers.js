@@ -26,7 +26,6 @@ Handlers.endpointAuthentication = function(req, res, next) {
 }
 
 Handlers.home = function(req, res) {
-  console.log("home")
   res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
   res.sendFile(Path.resolve(__dirname + '/../../client/index.html'));
 }
